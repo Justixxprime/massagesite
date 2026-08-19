@@ -2,7 +2,7 @@
   "name": "Amara Vale Massage Therapy",
   "short_name": "Amara Vale",
   "description": "Licensed therapeutic massage, deep tissue, Swedish, hot stone, sports & prenatal.",
-  "start_url": "/index.html",
+  "start_url": "massagesite/index.html",
   "display": "standalone",
   "background_color": "#F7F3EA",
   "theme_color": "#5C1030",
