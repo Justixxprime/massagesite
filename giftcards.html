@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Gift Cards, Amara Vale Massage Therapy</title>
+<meta name="description" content="Give the gift of a therapeutic massage session.">
+<link rel="canonical" href="https://www.amaravale.com/giftcards.html">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/favicon.ico" sizes="any">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/icon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="icons/icon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="theme-color" content="#5C1030">
+<meta name="msapplication-TileImage" content="icons/icon-192.png">
+<meta name="msapplication-TileColor" content="#5C1030">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Amara Vale">
+<meta property="og:site_name" content="Amara Vale Massage Therapy">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.amaravale.com/giftcards.html">
+<meta property="og:image" content="https://www.amaravale.com/icons/icon.svg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-[var(--alabaster)]">
+  <div id="scroll-progress"></div>
+
+  <header id="site-nav" class="fixed top-0 left-0 right-0 z-50">
+    <div id="utility-bar" class="hidden sm:block">
+      <div class="max-w-7xl mx-auto px-6 lg:px-10 py-2 flex items-center justify-between">
+        <p><i class="fa-regular fa-clock mr-1"></i> Open Every Day · 8am – 8pm · By Appointment</p>
+        <p><i class="fa-solid fa-shield-heart mr-1"></i> Licensed &amp; Insured LMT · (555) 019-2044</p>
+      </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between py-5">
+      <a href="index.html" class="flex items-center gap-3">
+        <span class="w-9 h-9 rounded-full flex items-center justify-center logo-mark" style="border:1.5px solid var(--rose)">
+          <span class="w-2 h-2 rounded-full logo-dot" style="background:var(--rose)"></span>
+        </span>
+        <span class="font-display text-2xl tracking-tight" style="color:var(--forest)">Amara Vale</span>
+      </a>
+      <nav class="hidden xl:flex items-center gap-4 eyebrow" style="color:var(--ink)">
+        <a href="index.html" class="nav-link"><i class="fa-solid fa-house"></i>Home</a>
+        <a href="about.html" class="nav-link"><i class="fa-solid fa-user"></i>About</a>
+        <a href="services.html" class="nav-link"><i class="fa-solid fa-spa"></i>Services</a>
+        <a href="packages.html" class="nav-link"><i class="fa-solid fa-gift"></i>Packages</a>
+        <a href="gallery.html" class="nav-link"><i class="fa-solid fa-camera"></i>Gallery</a>
+        <a href="testimonials.html" class="nav-link"><i class="fa-solid fa-quote-left"></i>Reviews</a>
+        <a href="blog.html" class="nav-link"><i class="fa-solid fa-feather"></i>Journal</a>
+
+        <div class="more-dropdown" id="more-dropdown">
+          <button type="button" class="more-trigger nav-link flex items-center" id="more-trigger" aria-haspopup="true" aria-expanded="false">
+            <i class="fa-solid fa-ellipsis"></i>More<i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div class="more-panel" role="menu">
+            <a href="certifications.html" class="nav-link"><i class="fa-solid fa-award"></i>Credentials</a>
+            <a href="faq.html" class="nav-link"><i class="fa-solid fa-circle-question"></i>FAQ</a>
+            <a href="giftcards.html" class="nav-link"><i class="fa-solid fa-gift"></i>Gift Cards</a>
+            <a href="policies.html" class="nav-link"><i class="fa-solid fa-file-shield"></i>Policies</a>
+            <div class="more-divider"></div>
+            <a href="corporate.html" class="nav-link"><i class="fa-solid fa-building"></i>Corporate Wellness<span class="more-badge">New</span></a>
+            <a href="referrals.html" class="nav-link"><i class="fa-solid fa-user-plus"></i>Referral Program<span class="more-badge">New</span></a>
+            <a href="location.html" class="nav-link"><i class="fa-solid fa-location-dot"></i>Location & Parking<span class="more-badge">New</span></a>
+          </div>
+        </div>
+      </nav>
+      <div class="hidden xl:flex items-center gap-3">
+        <button id="theme-toggle" aria-label="Toggle theme" class="theme-toggle-btn w-10 h-10 rounded-full flex items-center justify-center" style="border:1.5px solid var(--cream-line)">
+          <i id="theme-icon" class="fa-solid fa-circle-half-stroke" style="color:var(--forest)"></i>
+          <span class="theme-toggle-label" id="theme-toggle-label">System</span>
+        </button>
+        <a href="booking.html#booking-form" class="btn-cta"><i class="fa-solid fa-calendar-check"></i><span>Book a Session</span></a>
+      </div>
+      <div class="xl:hidden flex items-center gap-2">
+        <button id="theme-toggle-mobile" aria-label="Toggle theme" class="w-11 h-11 rounded-full flex items-center justify-center" style="border:1.5px solid var(--cream-line)">
+          <i class="fa-solid fa-circle-half-stroke theme-icon-mobile" style="color:var(--forest)"></i>
+        </button>
+        <button id="menu-btn" aria-label="Toggle menu" class="w-11 h-11 flex flex-col justify-center items-center gap-1.5">
+          <span class="block w-6 h-[1.5px]" style="background:var(--ink)"></span>
+          <span class="block w-6 h-[1.5px]" style="background:var(--ink)"></span>
+        </button>
+      </div>
+    </div>
+    <div id="mobile-menu" class="mobile-menu-overlay">
+      <div class="mobile-menu-backdrop"></div>
+      <div class="mobile-menu-panel">
+        <div class="mobile-menu-header">
+          <a href="index.html" class="flex items-center gap-3">
+            <span class="w-9 h-9 rounded-full flex items-center justify-center logo-mark" style="border:1.5px solid var(--rose)">
+              <span class="w-2 h-2 rounded-full logo-dot" style="background:var(--rose)"></span>
+            </span>
+            <span class="font-display text-xl" style="color:var(--forest)">Amara Vale</span>
+          </a>
+          <button id="mobile-menu-close" aria-label="Close menu" class="mobile-menu-close-btn">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <nav class="mobile-menu-links eyebrow">
+          <a href="index.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-house"></i></span>Home</a>
+          <a href="about.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-user"></i></span>About</a>
+          <a href="services.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-spa"></i></span>Services</a>
+          <a href="packages.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-gift"></i></span>Packages</a>
+          <a href="gallery.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-camera"></i></span>Gallery</a>
+          <a href="testimonials.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-quote-left"></i></span>Reviews</a>
+          <a href="certifications.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-award"></i></span>Credentials</a>
+          <a href="giftcards.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-gift"></i></span>Gift Cards</a>
+          <a href="faq.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-circle-question"></i></span>FAQ</a>
+          <a href="blog.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-feather"></i></span>Journal</a>
+          <a href="policies.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-file-shield"></i></span>Policies</a>
+
+          <div class="mobile-menu-divider"><span>More</span></div>
+
+          <a href="corporate.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-building"></i></span>Corporate Wellness</a>
+          <a href="referrals.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-user-plus"></i></span>Referral Program</a>
+          <a href="location.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-location-dot"></i></span>Location &amp; Parking</a>
+        </nav>
+
+        <div class="mobile-menu-footer">
+          <a href="booking.html#booking-form" class="btn-cta justify-center w-full"><i class="fa-solid fa-calendar-check"></i><span>Book a Session</span></a>
+          <div class="flex justify-center gap-4 mt-5">
+            <a href="https://wa.me/15550192044" target="_blank" rel="noopener" aria-label="WhatsApp" class="mobile-social-icon" style="background:linear-gradient(145deg,#31E17E,#1CAA53)"><i class="fa-brands fa-whatsapp"></i></a>
+            <a href="https://signal.me/#p/+15550192044" target="_blank" rel="noopener" aria-label="Signal" class="mobile-social-icon" style="background:linear-gradient(145deg,#4C86FF,#2A5FD9)"><i class="fa-solid fa-comment-dots"></i></a>
+            <a href="tel:+15550192044" aria-label="Call" class="mobile-social-icon" style="background:linear-gradient(145deg,#5C1030,#7A1D42)"><i class="fa-solid fa-phone"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="relative pt-40 pb-24 overflow-hidden">
+    <div class="absolute inset-0 kenburns opacity-30">
+      <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=2000&auto=format&fit=crop" alt="Gift-worthy studio ambiance" class="w-full h-full object-cover">
+    </div>
+    <div class="absolute inset-0" style="background:#5C1030;opacity:0.88"></div>
+    <div class="grain"></div>
+    <div class="absolute top-10 right-10 w-72 h-72 rounded-full opacity-10 blur-3xl" style="background:var(--rose)"></div>
+    <div class="max-w-6xl mx-auto px-6 lg:px-10 grid lg:grid-cols-2 gap-16 items-center">
+      <div>
+        <p class="eyebrow reveal" style="color:var(--rose-light)"><i class="fa-solid fa-gift"></i> Gift Cards</p>
+        <h1 class="font-display font-semibold text-6xl lg:text-7xl text-[#F7F3EA] mt-6 leading-[0.98] reveal reveal-delay-1" style="text-shadow:0 6px 40px rgba(0,0,0,0.4)">Give someone<br>an hour of quiet.</h1>
+        <p class="mt-6 text-lg reveal reveal-delay-2" style="color:#D9D2C2">Gift cards never expire and can be used toward any service. Sent by email, ready to print or forward.</p>
+        <div class="mt-8 grid grid-cols-3 sm:grid-cols-5 gap-3 reveal reveal-delay-3" id="amount-buttons">
+          <button type="button" data-amount="75" class="amount-btn btn-outline-hero justify-center">$75</button>
+          <button type="button" data-amount="100" class="amount-btn btn-outline-hero justify-center active">$100</button>
+          <button type="button" data-amount="150" class="amount-btn btn-outline-hero justify-center">$150</button>
+          <button type="button" data-amount="250" class="amount-btn btn-outline-hero justify-center">$250</button>
+          <button type="button" data-amount="500" class="amount-btn btn-outline-hero justify-center">$500</button>
+        </div>
+      </div>
+      <div class="relative reveal reveal-delay-2">
+        <div class="aspect-[3/2] rounded-3xl overflow-hidden shadow-2xl tilt-card" style="background:linear-gradient(135deg,var(--rose),#8f4c56)">
+          <div class="h-full w-full flex flex-col justify-between p-8 text-[#F7F3EA]">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-spa icon-bob"></i>
+              <p class="font-display text-2xl">Amara Vale</p>
+            </div>
+            <div>
+              <p class="eyebrow opacity-80">Gift Card</p>
+              <p class="font-display text-5xl mt-1"><span id="card-amount-display">$100</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       GIFT CARD REQUEST FORM, real submission via Web3Forms
+  ====================================================== -->
+  <section class="py-20 lg:py-28" style="background:var(--alabaster)">
+    <div class="max-w-xl mx-auto px-6">
+      <div class="text-center mb-10">
+        <p class="eyebrow reveal" style="color:var(--rose)"><i class="fa-solid fa-paper-plane"></i> Request a Gift Card</p>
+        <h2 class="font-display text-3xl mt-3 reveal reveal-delay-1" style="color:var(--forest)">Fill this out, she'll follow up to arrange payment.</h2>
+      </div>
+
+      <form id="giftcard-form" action="https://api.web3forms.com/submit" method="POST" class="space-y-5 reveal reveal-delay-2">
+        <input type="hidden" name="access_key" value="YOUR-WEB3FORMS-ACCESS-KEY-HERE">
+        <input type="hidden" name="subject" value="New Gift Card Request, Amara Vale">
+        <input type="hidden" name="amount" id="giftcard-amount-field" value="100">
+        <input type="checkbox" name="botcheck" class="hidden" style="display:none">
+
+        <div>
+          <label class="eyebrow block mb-2" style="color:var(--ink-soft)"><i class="fa-solid fa-tag mr-1 icon-wiggle" style="color:var(--rose)"></i> Amount Selected</label>
+          <input type="text" id="giftcard-amount-readonly" value="$100" readonly class="w-full px-5 py-4 rounded-xl border font-display text-xl" style="border-color:var(--cream-line);background:#fff;color:var(--forest)">
+        </div>
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div>
+            <label class="eyebrow block mb-2" style="color:var(--ink-soft)">Your Name</label>
+            <input required type="text" name="name" class="w-full px-5 py-4 rounded-xl border" style="border-color:var(--cream-line);background:#fff">
+          </div>
+          <div>
+            <label class="eyebrow block mb-2" style="color:var(--ink-soft)">Your Email</label>
+            <input required type="email" name="email" class="w-full px-5 py-4 rounded-xl border" style="border-color:var(--cream-line);background:#fff">
+          </div>
+        </div>
+        <div>
+          <label class="eyebrow block mb-2" style="color:var(--ink-soft)">Recipient Name (optional)</label>
+          <input type="text" name="recipient" placeholder="Who is this gift card for?" class="w-full px-5 py-4 rounded-xl border" style="border-color:var(--cream-line);background:#fff">
+        </div>
+        <div>
+          <label class="eyebrow block mb-2" style="color:var(--ink-soft)">Personal Message (optional)</label>
+          <textarea name="message" rows="3" class="w-full px-5 py-4 rounded-xl border" style="border-color:var(--cream-line);background:#fff"></textarea>
+        </div>
+        <button type="submit" class="btn-primary w-full justify-center">Request Gift Card</button>
+        <div id="giftcard-error" class="hidden text-sm text-center px-4 py-3 rounded-xl" style="background:#FBEAE8;color:#9C3B2E"></div>
+      </form>
+
+      <div id="giftcard-confirmation" class="hidden text-center py-16 reveal">
+        <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6" style="background:#5C1030">
+          <i class="fa-solid fa-check text-2xl" style="color:#F7F3EA"></i>
+        </div>
+        <h2 class="font-display text-3xl" style="color:var(--forest)">Request sent.</h2>
+        <p class="mt-4" style="color:var(--ink-soft)">Amara will follow up by email within 24 hours to arrange payment and delivery.</p>
+      </div>
+
+      <p class="text-center text-xs mt-8" style="color:var(--ink-soft)">Prefer to skip the form? <a href="https://wa.me/15550192044" target="_blank" rel="noopener" class="underline">Message on WhatsApp</a> instead.</p>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       GIFT MOMENT IMAGES
+  ====================================================== -->
+  <section class="grid grid-cols-2 md:grid-cols-3">
+    <div class="aspect-square overflow-hidden reveal"><img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover" alt="Gift moment, receiving a massage session"></div>
+    <div class="aspect-square overflow-hidden reveal reveal-delay-1"><img src="https://images.unsplash.com/photo-1531112238942-8f0ec6b2b1c9?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover" alt="Relaxed atmosphere"></div>
+    <div class="aspect-square overflow-hidden reveal reveal-delay-2 hidden md:block"><img src="https://images.unsplash.com/photo-1519823551278-64ac92734fb1?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover" alt="Studio detail"></div>
+  </section>
+
+  <!-- =====================================================
+       FOOTER — rich, responsive, active-page highlighting
+  ====================================================== -->
+  <footer style="background:#350A1D">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10 pt-16 pb-10">
+      <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 gap-8 md:gap-10 text-[#F7F3EA]">
+        <div class="col-span-2 md:col-span-2">
+          <a href="index.html" class="flex items-center gap-3 mb-4">
+            <span class="w-9 h-9 rounded-full flex items-center justify-center" style="border:1.5px solid var(--rose)">
+              <span class="w-2 h-2 rounded-full" style="background:var(--rose)"></span>
+            </span>
+            <span class="font-display text-2xl">Amara Vale</span>
+          </a>
+          <p class="text-sm max-w-xs" style="color:#9FAA9F">Therapeutic Massage &amp; Wellness. Licensed, insured, and privately practiced. One therapist, one room, real attention.</p>
+          <div class="flex gap-3 mt-6">
+            <a href="https://wa.me/15550192044" target="_blank" rel="noopener" aria-label="WhatsApp" class="w-10 h-10 rounded-full flex items-center justify-center transition hover:scale-110" style="background:#25D366">
+              <i class="fa-brands fa-whatsapp text-lg" style="color:#fff"></i>
+            </a>
+            <a href="https://signal.me/#p/+15550192044" target="_blank" rel="noopener" aria-label="Signal" class="w-10 h-10 rounded-full flex items-center justify-center transition hover:scale-110" style="background:#3A76F0">
+              <i class="fa-solid fa-comment-dots text-lg" style="color:#fff"></i>
+            </a>
+            <a href="#" target="_blank" rel="noopener" aria-label="TikTok" class="w-10 h-10 rounded-full flex items-center justify-center transition hover:scale-110" style="border:1px solid rgba(247,243,234,0.25)">
+              <i class="fa-brands fa-tiktok" style="color:#F7F3EA"></i>
+            </a>
+            <a href="#" aria-label="Instagram" class="w-10 h-10 rounded-full flex items-center justify-center transition hover:scale-110" style="border:1px solid rgba(247,243,234,0.25)">
+              <i class="fa-brands fa-instagram" style="color:#F7F3EA"></i>
+            </a>
+            <a href="#" aria-label="Google" class="w-10 h-10 rounded-full flex items-center justify-center transition hover:scale-110" style="border:1px solid rgba(247,243,234,0.25)">
+              <i class="fa-brands fa-google" style="color:#F7F3EA"></i>
+            </a>
+          </div>
+        </div>
+
+        <div>
+          <p class="eyebrow" style="color:var(--rose-light)">Explore</p>
+          <ul class="mt-4 space-y-2 text-sm" style="color:#C9CFC5">
+            <li><a href="about.html" class="footer-link">About</a></li>
+            <li><a href="services.html" class="footer-link">Services &amp; Pricing</a></li>
+            <li><a href="packages.html" class="footer-link">Packages</a></li>
+            <li><a href="gallery.html" class="footer-link">Gallery</a></li>
+            <li><a href="blog.html" class="footer-link">Journal</a></li>
+            <li><a href="testimonials.html" class="footer-link">Testimonials</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <p class="eyebrow" style="color:var(--rose-light)">Studio</p>
+          <ul class="mt-4 space-y-2 text-sm" style="color:#C9CFC5">
+            <li><a href="certifications.html" class="footer-link">Credentials</a></li>
+            <li><a href="giftcards.html" class="footer-link">Gift Cards</a></li>
+            <li><a href="faq.html" class="footer-link">FAQ</a></li>
+            <li><a href="policies.html" class="footer-link">Policies</a></li>
+            <li><a href="booking.html" class="footer-link">Book a Session</a></li>
+          </ul>
+        </div>
+
+        <div class="col-span-2 md:col-span-1">
+          <p class="eyebrow" style="color:var(--rose-light)">Contact</p>
+          <ul class="mt-4 space-y-3 text-sm" style="color:#C9CFC5">
+            <li><a href="mailto:hello@amaravale.com" class="hover:text-white break-all"><i class="fa-regular fa-envelope mr-1"></i> hello@amaravale.com</a></li>
+            <li><a href="tel:+15550192044" class="hover:text-white"><i class="fa-solid fa-phone mr-1"></i> (555) 019-2044</a></li>
+            <li><a href="https://wa.me/15550192044" target="_blank" rel="noopener" class="inline-flex items-center gap-2 hover:text-white"><i class="fa-brands fa-whatsapp" style="color:#25D366"></i> WhatsApp</a></li>
+            <li><a href="https://signal.me/#p/+15550192044" target="_blank" rel="noopener" class="inline-flex items-center gap-2 hover:text-white"><i class="fa-solid fa-comment-dots" style="color:#3A76F0"></i> Signal</a></li>
+            <li>By appointment · Every day</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between gap-3 text-xs" style="color:#8B9689">
+        <p>© 2026 Amara Vale Massage Therapy. All rights reserved.</p>
+        <p>License #LMT-000000, placeholder, replace with real license number</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating contact buttons: WhatsApp + Signal -->
+  <div class="fixed bottom-6 left-6 z-40 flex flex-col gap-4" id="contact-fab-group">
+    <a href="https://signal.me/#p/+15550192044" target="_blank" rel="noopener" aria-label="Message on Signal" class="contact-fab" style="background:linear-gradient(145deg,#4C86FF,#2A5FD9)">
+      <i class="fa-solid fa-comment-dots"></i>
+      <span class="contact-fab-label">Chat on Signal</span>
+    </a>
+    <a href="https://wa.me/15550192044" target="_blank" rel="noopener" aria-label="Message on WhatsApp" class="contact-fab" style="background:linear-gradient(145deg,#31E17E,#1CAA53)">
+      <i class="fa-brands fa-whatsapp"></i>
+      <span class="contact-fab-label">Chat on WhatsApp</span>
+    </a>
+  </div>
+
+  <!-- =====================================================
+       TAWK.TO LIVE CHAT — real live chat, free forever, no caps.
+       Setup (2 minutes): create a free account at tawk.to, then go to
+       Administration > Channels > Chat Widget to get your Property ID
+       and Widget ID. Replace the two placeholders below with your real
+       values. Full walkthrough in TEACHING-GUIDE.md.
+  ====================================================== -->
+  <script type="text/javascript">
+  var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+  (function(){
+    var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+    s1.async = true;
+    s1.src = 'https://embed.tawk.to/6a7d092d0169a71d4cd828ae/1jvs6nnbt';
+    s1.charset = 'UTF-8';
+    s1.setAttribute('crossorigin', '*');
+    s0.parentNode.insertBefore(s1, s0);
+  })();
+  </script>
+
+  <!-- Back to top -->
+  <button id="back-to-top" aria-label="Back to top">
+    <i class="fa-solid fa-arrow-up" style="color:#F7F3EA"></i>
+  </button>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
