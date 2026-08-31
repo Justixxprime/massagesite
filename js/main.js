@@ -13,13 +13,61 @@ document.addEventListener('DOMContentLoaded', () => {
          stuck. Runs before anything else touches body overflow.
   --------------------------------------------------------------------- */
   document.body.style.overflow = '';
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
+  document.body.style.width = '';
   window.addEventListener('pageshow', (e) => {
     if (e.persisted) {
       document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      document.body.style.width = '';
       const menu = document.getElementById('mobile-menu');
       if (menu) menu.classList.remove('open');
     }
   });
+
+  /* ---------------------------------------------------------------------
+     -1b. SCROLL LOCK HELPER — shared by the mobile menu and the gallery
+          lightbox. Freezes the page in place while an overlay is open.
+
+          Why not just `body { overflow: hidden }`? On iOS Safari, that
+          alone does NOT reliably stop the page underneath from moving,
+          and a `position: fixed` overlay is positioned against the
+          on-screen viewport, which iOS Safari recalculates lazily. Net
+          effect: open the menu after scrolling down, and the overlay can
+          render in the wrong spot until the next scroll forces Safari to
+          recompute it — exactly the "looks broken until you scroll"
+          mobile menu bug.
+
+          Fix: instead of hiding overflow, we pin the body itself with
+          `position: fixed` at its current scroll offset. That makes the
+          body incapable of moving at all while the overlay is open, on
+          every browser, so the fixed overlay always lines up. On close,
+          we undo the pin and jump back to the saved scroll position so
+          the page doesn't appear to move.
+  --------------------------------------------------------------------- */
+  let scrollLockY = 0;
+  function lockBodyScroll() {
+    scrollLockY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollLockY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+  }
+  function unlockBodyScroll() {
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    window.scrollTo(0, scrollLockY);
+  }
 
   /* ---------------------------------------------------------------------
      0. THEME SYSTEM — Light / Dark / System / Auto (time-of-day)
@@ -350,17 +398,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function openMobileMenu() {
     if (!mobileMenu) return;
     mobileMenu.classList.add('open');
-    // Simple overflow lock, paired with overscroll-behavior:contain on the
-    // menu panel itself (see CSS). The heavier position:fixed body-lock
-    // technique was tried first but risked leaving the page stuck if the
-    // menu didn't close cleanly on every device, so this simpler, more
-    // predictable approach replaces it.
-    document.body.style.overflow = 'hidden';
+    lockBodyScroll();
   }
   function closeMobileMenu() {
     if (!mobileMenu) return;
     mobileMenu.classList.remove('open');
-    document.body.style.overflow = '';
+    unlockBodyScroll();
   }
 
   if (menuBtn && mobileMenu) {
@@ -434,7 +477,7 @@ document.addEventListener('DOMContentLoaded', () => {
       lightboxImg.src = img.src;
       lightboxImg.alt = img.alt;
       lightbox.classList.add('open');
-      document.body.style.overflow = 'hidden';
+      lockBodyScroll();
     };
 
     const showIndex = (i) => {
@@ -448,7 +491,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const closeLightbox = () => {
       lightbox.classList.remove('open');
-      document.body.style.overflow = '';
+      unlockBodyScroll();
     };
 
     if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
