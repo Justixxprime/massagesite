@@ -356,7 +356,7 @@
         <div class="admin-card">
           <p class="eyebrow" style="color:var(--rose)"><i class="fa-solid fa-clock-rotate-left"></i> Recently Added</p>
           <div class="recent-strip" id="recentStrip" style="margin-top:1rem;"></div>
-          <p id="recentEmpty" style="color:var(--ink-soft);font-size:0.85rem;display:none;margin-top:1rem;">Nothing uploaded yet — head to the Upload tab.</p>
+          <p id="recentEmpty" style="color:var(--ink-soft);font-size:0.85rem;display:none;margin-top:1rem;">Nothing uploaded yet. Head to the Upload tab.</p>
         </div>
       </div>
 
@@ -368,7 +368,7 @@
           <div id="dropzone">
             <i class="fa-solid fa-cloud-arrow-up"></i>
             <p><strong>Drop files here</strong> or click to browse</p>
-            <p style="font-size:0.8rem;margin-top:0.4rem;">Handles up to 100 at once — images and videos both</p>
+            <p style="font-size:0.8rem;margin-top:0.4rem;">Handles up to 100 at once, images and videos both</p>
           </div>
           <input type="file" id="fileInput" multiple accept="image/*,video/*">
 
@@ -423,7 +423,7 @@
           <div id="libraryLoading"><div class="spinner-ring"></div><p>Loading your library…</p></div>
           <div id="libraryEmpty" style="display:none;">
             <i class="fa-solid fa-photo-film text-3xl mb-3" style="color:var(--rose-light)"></i>
-            <p>No files match — try a different search or category.</p>
+            <p>No files match. Try a different search or category.</p>
           </div>
           <div class="lib-grid" id="libraryGrid" style="display:none;"></div>
         </div>
@@ -434,7 +434,7 @@
         <div class="admin-card">
           <p class="eyebrow" style="color:var(--rose)"><i class="fa-solid fa-key"></i> Settings</p>
           <h2 class="font-display font-semibold text-xl mt-2 mb-1" style="color:var(--forest)">Change Passwords</h2>
-          <p style="color:var(--ink-soft);font-size:0.9rem;margin-bottom:1.25rem;">Update either password right here — no code or CLI needed. Changes apply immediately.</p>
+          <p style="color:var(--ink-soft);font-size:0.9rem;margin-bottom:1.25rem;">Update either password right here. No code or CLI needed, and changes apply immediately.</p>
 
           <div style="display:grid;gap:1.5rem;">
             <div>
@@ -524,6 +524,7 @@
             <li><a href="giftcards.html" class="footer-link">Gift Cards</a></li>
             <li><a href="faq.html" class="footer-link">FAQ</a></li>
             <li><a href="policies.html" class="footer-link">Policies</a></li>
+            <li><a href="private-gallery.html" class="footer-link inline-flex items-center gap-2"><i class="fa-solid fa-lock text-xs"></i> Private Gallery</a></li>
             <li><a href="booking.html" class="footer-link">Book a Session</a></li>
           </ul>
         </div>
@@ -685,7 +686,7 @@
         await navigator.clipboard.writeText(url);
         toast("Client gallery link copied");
       } catch {
-        toast("Couldn't copy — here it is: " + url, "error");
+        toast("Couldn't copy. Here it is: " + url, "error");
       }
     });
 
@@ -823,7 +824,7 @@
 
     function checkCompletion() {
       if (doneFiles >= totalFiles && totalFiles > 0) {
-        completionText.textContent = `${totalFiles} file${totalFiles > 1 ? "s" : ""} uploaded — the gallery is updated.`;
+        completionText.textContent = `${totalFiles} file${totalFiles > 1 ? "s" : ""} uploaded. The gallery is updated.`;
         completionBanner.style.display = "block";
       }
     }
