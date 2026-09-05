@@ -502,19 +502,19 @@
             <div class="w-full flex-shrink-0 px-2">
               <div class="testimonial-card p-10 text-center">
                 <p class="font-display text-2xl leading-snug" style="color:var(--forest)">"I walked in barely able to turn my neck and walked out actually able to look over my shoulder. First time a massage did what it was supposed to."</p>
-                <p class="eyebrow mt-6" style="color:var(--rose)">— Rachel T., Deep Tissue</p>
+                <p class="eyebrow mt-6" style="color:var(--rose)">Rachel T., Deep Tissue</p>
               </div>
             </div>
             <div class="w-full flex-shrink-0 px-2">
               <div class="testimonial-card p-10 text-center">
                 <p class="font-display text-2xl leading-snug" style="color:var(--forest)">"Amara actually listens before she starts. She asked what hurt, then spent the whole hour proving she'd been paying attention."</p>
-                <p class="eyebrow mt-6" style="color:var(--rose)">— Marcus D., Sports Recovery</p>
+                <p class="eyebrow mt-6" style="color:var(--rose)">Marcus D., Sports Recovery</p>
               </div>
             </div>
             <div class="w-full flex-shrink-0 px-2">
               <div class="testimonial-card p-10 text-center">
                 <p class="font-display text-2xl leading-snug" style="color:var(--forest)">"The prenatal massage was the first hour in months my back didn't hurt. The setup for pregnant clients is genuinely thoughtful."</p>
-                <p class="eyebrow mt-6" style="color:var(--rose)">— Priya S., Prenatal</p>
+                <p class="eyebrow mt-6" style="color:var(--rose)">Priya S., Prenatal</p>
               </div>
             </div>
           </div>
@@ -523,6 +523,94 @@
       </div>
     </div>
   </section>
+
+  <!-- =====================================================
+       PRIVATE GALLERY — exclusive members-only teaser
+  ====================================================== -->
+  <section class="relative py-28 lg:py-40 overflow-hidden" id="private-gallery-teaser">
+    <div class="absolute inset-0 kenburns">
+      <img src="https://images.unsplash.com/photo-1600334129128-685c5582fd35?q=80&w=2000&auto=format&fit=crop" alt="" class="w-full h-full object-cover">
+    </div>
+    <div class="absolute inset-0" style="background:radial-gradient(ellipse at 50% 40%, rgba(60,10,32,0.55) 0%, rgba(10,3,7,0.93) 85%)"></div>
+    <div class="grain"></div>
+    <div id="gallery-shimmer" class="absolute inset-0 pointer-events-none"></div>
+
+    <div class="orb orb-float" style="width:300px;height:300px;top:-70px;left:-80px;background:var(--gold);opacity:0.12"></div>
+    <div class="orb orb-float" style="width:240px;height:240px;bottom:-60px;right:-60px;background:var(--rose-light);opacity:0.12;animation-delay:1.4s"></div>
+
+    <div class="relative max-w-3xl mx-auto px-6 text-center">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6 reveal is-visible" style="border:1px solid rgba(212,175,90,0.4);background:rgba(212,175,90,0.08)">
+        <i class="fa-solid fa-champagne-glasses text-xs" style="color:var(--gold)"></i>
+        <span class="text-xs tracking-[0.15em] uppercase" style="color:var(--gold)">By Invitation</span>
+      </div>
+
+      <h2 class="font-display font-semibold text-4xl lg:text-6xl leading-tight reveal reveal-delay-1" style="color:#F7F3EA">
+        A Private World,<br>Reserved for Few.
+      </h2>
+
+      <p class="mt-7 text-lg leading-relaxed max-w-xl mx-auto reveal reveal-delay-2" style="color:#D9CFC2">
+        Beyond the studio you can see, there is a collection you cannot.
+        Candlelit and unhurried, it is shown to no one who hasn't earned the
+        key. It stays sealed behind a password, revealed one soft, deliberate
+        heartbeat at a time.
+      </p>
+
+      <div class="mt-9 flex flex-wrap items-center justify-center gap-3 reveal reveal-delay-2">
+        <span class="px-4 py-2 rounded-full text-xs" style="background:rgba(247,243,234,0.08);border:1px solid rgba(247,243,234,0.18);color:#D9CFC2">
+          <i class="fa-solid fa-lock text-[10px] mr-1.5" style="color:var(--gold)"></i>Included with Annual VIP
+        </span>
+        <span class="px-4 py-2 rounded-full text-xs" style="background:rgba(247,243,234,0.08);border:1px solid rgba(247,243,234,0.18);color:#D9CFC2">
+          <i class="fa-solid fa-star text-[10px] mr-1.5" style="color:var(--gold)"></i>Included with Monthly Membership
+        </span>
+      </div>
+
+      <div class="mt-10 flex flex-wrap items-center justify-center gap-4 reveal reveal-delay-3">
+        <a href="private-gallery.html" class="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-sm transition-all duration-300"
+           style="background:linear-gradient(135deg, var(--gold), #8a6b28); color:#1c1108; box-shadow:0 15px 40px -10px rgba(212,175,90,0.4);">
+          <i class="fa-solid fa-key text-xs"></i>
+          <span>I Have a Password</span>
+        </a>
+        <a href="booking.html#booking-form" class="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-sm transition-all duration-300"
+           style="border:1.5px solid rgba(247,243,234,0.35); color:#F7F3EA;">
+          <span>Ask About Access</span>
+          <i class="fa-solid fa-arrow-right text-xs"></i>
+        </a>
+      </div>
+
+      <p class="mt-8 text-xs tracking-wide reveal reveal-delay-3" style="color:#8B7B6B">
+        Access is arranged directly, never sold at the door.
+      </p>
+    </div>
+  </section>
+
+  <style>
+    #gallery-shimmer .spark {
+      position: absolute; width: 3px; height: 3px; border-radius: 50%;
+      background: var(--gold); opacity: 0; animation: spark-drift linear infinite;
+    }
+    @keyframes spark-drift {
+      0% { transform: translateY(10%) translateX(0); opacity: 0; }
+      15% { opacity: 0.8; }
+      85% { opacity: 0.6; }
+      100% { transform: translateY(-115%) translateX(20px); opacity: 0; }
+    }
+  </style>
+  <script>
+    (function () {
+      const field = document.getElementById("gallery-shimmer");
+      if (!field) return;
+      for (let i = 0; i < 22; i++) {
+        const s = document.createElement("div");
+        s.className = "spark";
+        s.style.left = Math.random() * 100 + "%";
+        s.style.bottom = "-10px";
+        s.style.animationDuration = 6 + Math.random() * 8 + "s";
+        s.style.animationDelay = Math.random() * 6 + "s";
+        s.style.width = s.style.height = (2 + Math.random() * 2) + "px";
+        field.appendChild(s);
+      }
+    })();
+  </script>
 
   <!-- =====================================================
        FINAL CTA
