@@ -10,7 +10,7 @@ compatibility_date = "2026-01-01"
 binding = "MEDIA_BUCKET"
 bucket_name = "amara-vale-media"
 
-# Used for brute-force password lockout (5 wrong tries = 15 min lock)
+# Used for brute-force password lockout
 [[kv_namespaces]]
 binding = "RATE_LIMIT"
-id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+id = "42a4fd9fff614fd19c9d31ee1cba0847"
