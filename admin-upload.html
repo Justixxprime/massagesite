@@ -140,6 +140,19 @@
   }
   .lib-mini-btn:hover { background: rgba(255,255,255,0.35); }
   .lib-mini-btn.danger:hover { background: #b0233a; }
+
+  /* ---------- Client password list ---------- */
+  .pw-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding: 0.9rem 1.1rem; border-radius: 0.75rem; background: var(--alabaster-dim);
+  }
+  .pw-row-label { font-weight: 600; font-size: 0.88rem; color: var(--ink); }
+  .pw-row-date { font-size: 0.72rem; color: var(--ink-soft); margin-top: 0.15rem; }
+  .pw-row-revoke {
+    flex-shrink: 0; padding: 0.5rem 0.9rem; border-radius: 999px; border: 1.5px solid var(--cream-line);
+    background: #fff; color: var(--ink-soft); font-size: 0.75rem; cursor: pointer; transition: all 0.2s ease;
+  }
+  .pw-row-revoke:hover { border-color: #b0233a; color: #b0233a; }
   .lib-cat-select {
     font-size: 0.65rem; padding: 0.3rem 0.4rem; border-radius: 0.4rem; border: none;
     background: rgba(255,255,255,0.9); color: var(--ink); flex: 1;
@@ -432,25 +445,35 @@
       <!-- ===================== SETTINGS ===================== -->
       <div class="dash-panel" id="panel-settings">
         <div class="admin-card">
-          <p class="eyebrow" style="color:var(--rose)"><i class="fa-solid fa-key"></i> Settings</p>
-          <h2 class="font-display font-semibold text-xl mt-2 mb-1" style="color:var(--forest)">Change Passwords</h2>
-          <p style="color:var(--ink-soft);font-size:0.9rem;margin-bottom:1.25rem;">Update either password right here. No code or CLI needed, and changes apply immediately.</p>
+          <p class="eyebrow" style="color:var(--rose)"><i class="fa-solid fa-users"></i> Client Access</p>
+          <h2 class="font-display font-semibold text-xl mt-2 mb-1" style="color:var(--forest)">Client Passwords</h2>
+          <p style="color:var(--ink-soft);font-size:0.9rem;margin-bottom:1.25rem;">
+            Give different clients different passwords. Any of them unlocks the same gallery at
+            <code>private-gallery.html</code>. You don't have to hand everyone the same one.
+          </p>
 
-          <div style="display:grid;gap:1.5rem;">
-            <div>
-              <p style="font-weight:600;margin-bottom:0.4rem;font-size:0.9rem;">Client gallery password</p>
-              <p style="color:var(--ink-soft);font-size:0.8rem;margin-bottom:0.6rem;">This is what you hand to clients to unlock <code>private-gallery.html</code>.</p>
-              <input type="password" id="newViewPassword" placeholder="New client password (min 6 characters)">
-              <button type="button" class="btn-rose mt-2" id="saveViewPassword" style="font-size:0.8rem;padding:0.7rem 1.4rem;">Update Client Password</button>
-              <p id="viewPasswordMsg" style="font-size:0.82rem;margin-top:0.5rem;min-height:1.2em;"></p>
+          <div id="galleryPasswordList" style="display:grid;gap:0.6rem;margin-bottom:1.5rem;"></div>
+          <p id="galleryPasswordEmpty" style="color:var(--ink-soft);font-size:0.85rem;display:none;">No client passwords yet. Add one below.</p>
+
+          <div style="border-top:1px solid var(--cream-line);padding-top:1.25rem;">
+            <p style="font-weight:600;margin-bottom:0.6rem;font-size:0.9rem;">Add a new client password</p>
+            <div style="display:grid;gap:0.6rem;grid-template-columns:1fr 1fr;">
+              <input type="text" id="newPasswordLabel" placeholder="Label (e.g. Sarah, VIP, Studio Shoot)" style="grid-column:1/2;">
+              <input type="password" id="newPasswordValue" placeholder="Password (min 6 characters)" style="grid-column:2/3;">
             </div>
-            <div style="border-top:1px solid var(--cream-line);padding-top:1.5rem;">
-              <p style="font-weight:600;margin-bottom:0.4rem;font-size:0.9rem;">Admin password</p>
-              <p style="color:var(--ink-soft);font-size:0.8rem;margin-bottom:0.6rem;">This is your own password for this dashboard. Changing it logs out any other admin session next time they load the page.</p>
-              <input type="password" id="newAdminPassword" placeholder="New admin password (min 6 characters)">
-              <button type="button" class="btn-rose mt-2" id="saveAdminPassword" style="font-size:0.8rem;padding:0.7rem 1.4rem;">Update Admin Password</button>
-              <p id="adminPasswordMsg" style="font-size:0.82rem;margin-top:0.5rem;min-height:1.2em;"></p>
-            </div>
+            <button type="button" class="btn-rose mt-2" id="addGalleryPassword" style="font-size:0.8rem;padding:0.7rem 1.4rem;">Add Password</button>
+            <p id="galleryPasswordMsg" style="font-size:0.82rem;margin-top:0.5rem;min-height:1.2em;"></p>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <p class="eyebrow" style="color:var(--rose)"><i class="fa-solid fa-key"></i> Your Own Login</p>
+          <h2 class="font-display font-semibold text-xl mt-2 mb-1" style="color:var(--forest)">Admin Password</h2>
+          <p style="color:var(--ink-soft);font-size:0.9rem;margin-bottom:1.25rem;">This is your own password for this dashboard, separate from any client password above.</p>
+          <div>
+            <input type="password" id="newAdminPassword" placeholder="New admin password (min 6 characters)">
+            <button type="button" class="btn-rose mt-2" id="saveAdminPassword" style="font-size:0.8rem;padding:0.7rem 1.4rem;">Update Admin Password</button>
+            <p id="adminPasswordMsg" style="font-size:0.82rem;margin-top:0.5rem;min-height:1.2em;"></p>
           </div>
         </div>
       </div>
@@ -1115,13 +1138,10 @@
       }
     }
 
-    // ---------- Settings: password changes ----------
-    document.getElementById("saveViewPassword").addEventListener("click", () => changePassword("view", "newViewPassword", "viewPasswordMsg"));
-    document.getElementById("saveAdminPassword").addEventListener("click", () => changePassword("admin", "newAdminPassword", "adminPasswordMsg"));
-
-    async function changePassword(scope, inputId, msgId) {
-      const input = document.getElementById(inputId);
-      const msg = document.getElementById(msgId);
+    // ---------- Settings: admin password ----------
+    document.getElementById("saveAdminPassword").addEventListener("click", async () => {
+      const input = document.getElementById("newAdminPassword");
+      const msg = document.getElementById("adminPasswordMsg");
       const newPassword = input.value;
       msg.style.color = "";
       if (newPassword.length < 6) {
@@ -1133,7 +1153,7 @@
         const res = await fetch(`${WORKER_URL}/api/admin/change-password`, {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${adminToken}` },
-          body: JSON.stringify({ scope, newPassword }),
+          body: JSON.stringify({ newPassword }),
         });
         const data = await res.json();
         if (!res.ok) {
@@ -1142,14 +1162,113 @@
           return;
         }
         msg.style.color = "#2f7a45";
-        msg.textContent = "Updated! Remember to share the new password with whoever needs it.";
+        msg.textContent = "Updated. Use this new password next time you log in.";
         input.value = "";
-        toast(`${scope === "view" ? "Client" : "Admin"} password updated`);
+        toast("Admin password updated");
       } catch {
         msg.style.color = "#b0233a";
         msg.textContent = "Couldn't reach the server.";
       }
+    });
+
+    // ---------- Settings: client (gallery) passwords, plural ----------
+    async function loadGalleryPasswords() {
+      const list = document.getElementById("galleryPasswordList");
+      const empty = document.getElementById("galleryPasswordEmpty");
+      try {
+        const res = await fetch(`${WORKER_URL}/api/admin/gallery-passwords`, {
+          headers: { Authorization: `Bearer ${adminToken}` },
+        });
+        const data = await res.json();
+        if (!res.ok) { toast(data.error || "Couldn't load client passwords", "error"); return; }
+        list.innerHTML = "";
+        if (!data.passwords.length) {
+          empty.style.display = "block";
+          return;
+        }
+        empty.style.display = "none";
+        data.passwords.forEach((p) => list.appendChild(buildPasswordRow(p)));
+      } catch {
+        toast("Couldn't reach the server", "error");
+      }
     }
+
+    function buildPasswordRow(p) {
+      const row = document.createElement("div");
+      row.className = "pw-row";
+      const dateStr = p.createdAt ? new Date(p.createdAt).toLocaleDateString() : "Original password";
+      row.innerHTML = `
+        <div>
+          <div class="pw-row-label">${p.label || "Unnamed"}</div>
+          <div class="pw-row-date">Added ${dateStr}</div>
+        </div>
+      `;
+      const revokeBtn = document.createElement("button");
+      revokeBtn.className = "pw-row-revoke";
+      revokeBtn.textContent = "Revoke";
+      revokeBtn.addEventListener("click", async () => {
+        const ok = await confirmDialog("Revoke this password?", `"${p.label}" will no longer unlock the gallery. This can't be undone.`);
+        if (!ok) return;
+        try {
+          const res = await fetch(`${WORKER_URL}/api/admin/gallery-passwords/remove`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${adminToken}` },
+            body: JSON.stringify({ id: p.id }),
+          });
+          const data = await res.json();
+          if (!res.ok) { toast(data.error || "Couldn't revoke password", "error"); return; }
+          toast("Password revoked");
+          loadGalleryPasswords();
+        } catch {
+          toast("Couldn't reach the server", "error");
+        }
+      });
+      row.appendChild(revokeBtn);
+      return row;
+    }
+
+    document.getElementById("addGalleryPassword").addEventListener("click", async () => {
+      const labelInput = document.getElementById("newPasswordLabel");
+      const valueInput = document.getElementById("newPasswordValue");
+      const msg = document.getElementById("galleryPasswordMsg");
+      const label = labelInput.value.trim();
+      const password = valueInput.value;
+      msg.style.color = "";
+      if (password.length < 6) {
+        msg.style.color = "#b0233a";
+        msg.textContent = "Password must be at least 6 characters.";
+        return;
+      }
+      try {
+        const res = await fetch(`${WORKER_URL}/api/admin/gallery-passwords/add`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${adminToken}` },
+          body: JSON.stringify({ label, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          msg.style.color = "#b0233a";
+          msg.textContent = data.error || "Couldn't add password.";
+          return;
+        }
+        msg.style.color = "#2f7a45";
+        msg.textContent = "Added. Share this password with whoever should use it.";
+        labelInput.value = "";
+        valueInput.value = "";
+        toast("Client password added");
+        loadGalleryPasswords();
+      } catch {
+        msg.style.color = "#b0233a";
+        msg.textContent = "Couldn't reach the server.";
+      }
+    });
+
+    // Load the password list whenever Settings tab is opened, plus once on first dashboard entry
+    document.querySelectorAll(".dash-tab").forEach((tab) => {
+      if (tab.dataset.tab === "settings") {
+        tab.addEventListener("click", loadGalleryPasswords);
+      }
+    });
 
     // ---------- Init: resume session if we have one ----------
     (function init() {

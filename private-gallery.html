@@ -144,6 +144,10 @@
   .g-download:hover { background: var(--forest); }
 
   #gallery-loading, #gallery-empty { text-align: center; padding: 5rem 0; color: var(--ink-soft); }
+  #galleryLogoutBtn:hover { border-color: var(--rose); color: var(--rose); }
+  @media (max-width: 640px) {
+    #galleryLogoutBtn { position: static !important; display: inline-flex !important; margin: 0 auto 1rem; }
+  }
   .spinner-ring {
     width: 42px; height: 42px; border-radius: 50%; margin: 0 auto 1rem;
     border: 3px solid var(--alabaster-dim); border-top-color: var(--rose);
@@ -346,7 +350,10 @@
   ====================================================== -->
   <section id="gallery-section">
     <div class="max-w-7xl mx-auto px-6 lg:px-10">
-      <div class="text-center mb-12 reveal is-visible">
+      <div class="text-center mb-12 reveal is-visible" style="position:relative;">
+        <button type="button" id="galleryLogoutBtn" style="position:absolute;top:0;right:0;display:flex;align-items:center;gap:0.4rem;padding:0.5rem 1rem;border-radius:999px;border:1.5px solid var(--cream-line);background:#fff;color:var(--ink-soft);font-size:0.75rem;cursor:pointer;transition:all 0.2s ease;">
+          <i class="fa-solid fa-lock text-xs"></i><span>Log Out</span>
+        </button>
         <p class="eyebrow" style="color:var(--rose)"><i class="fa-solid fa-heart"></i> Just For You</p>
         <h1 class="font-display font-semibold text-4xl mt-3" style="color:var(--forest)">Your Private Gallery</h1>
         <p class="mt-3 max-w-xl mx-auto" style="color:var(--ink-soft)">Tap any tile to bring it into focus, tap again to open it full-screen.</p>
@@ -587,11 +594,30 @@
     }
 
     function unlockAndReveal(token) {
+      lockSection.classList.remove("unlocking");
+      lockSection.style.display = "flex";
       lockSection.classList.add("unlocking");
       gallerySection.style.display = "block";
       setTimeout(() => { lockSection.style.display = "none"; }, 900);
       loadGallery(token);
     }
+
+    function logOut() {
+      sessionStorage.removeItem(TOKEN_KEY);
+      grid.innerHTML = "";
+      currentItems = [];
+      document.getElementById("galleryFilters").innerHTML = "";
+      document.getElementById("galleryFilters").style.display = "none";
+      gallerySection.style.display = "none";
+      lockSection.style.display = "flex";
+      lockSection.classList.remove("unlocking");
+      passwordInput.value = "";
+      lockError.textContent = "";
+      loadingEl.style.display = "block";
+      emptyEl.style.display = "none";
+      grid.style.display = "none";
+    }
+    document.getElementById("galleryLogoutBtn").addEventListener("click", logOut);
 
     // ---------- Load + render gallery ----------
     async function loadGallery(token) {

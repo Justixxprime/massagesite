@@ -137,15 +137,43 @@ async function clearAttempts(env, key) {
 }
 
 // ---------- password storage (mutable via KV, seeded from secrets) ----------
+// Admin password: a single hash, same as before.
+// Client/gallery password: a LIST of {id, label, hash, createdAt}, so several
+// different passwords can each unlock the same gallery (e.g. one per client).
 
-async function getPasswordHash(env, scope) {
-  const stored = await env.RATE_LIMIT.get(`password:${scope}`);
+async function getAdminPasswordHash(env) {
+  const stored = await env.RATE_LIMIT.get("password:admin");
   if (stored) return stored;
-  return scope === "view" ? env.GALLERY_PASSWORD_HASH : env.ADMIN_PASSWORD_HASH;
+  return env.ADMIN_PASSWORD_HASH;
 }
 
-async function setPasswordHash(env, scope, hash) {
-  await env.RATE_LIMIT.put(`password:${scope}`, hash);
+async function setAdminPasswordHash(env, hash) {
+  await env.RATE_LIMIT.put("password:admin", hash);
+}
+
+async function getGalleryPasswordList(env) {
+  const raw = await env.RATE_LIMIT.get("password:view");
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    } catch {
+      // Old format from before multi-password support: a single raw hash string.
+      return [{ id: "legacy", label: "Original Password", hash: raw, createdAt: null }];
+    }
+  }
+  if (env.GALLERY_PASSWORD_HASH) {
+    return [{ id: "legacy", label: "Original Password", hash: env.GALLERY_PASSWORD_HASH, createdAt: null }];
+  }
+  return [];
+}
+
+async function saveGalleryPasswordList(env, list) {
+  await env.RATE_LIMIT.put("password:view", JSON.stringify(list));
+}
+
+function makeId() {
+  return (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2)).replace(/-/g, "").slice(0, 12);
 }
 
 // ---------- route handlers ----------
@@ -162,9 +190,10 @@ async function handleUnlock(request, env) {
   const { password } = await request.json().catch(() => ({}));
   if (!password) return json(env, { error: "Password required" }, 400);
   const hash = await sha256Hex(password);
-  const correctHash = await getPasswordHash(env, "view");
+  const list = await getGalleryPasswordList(env);
+  const match = list.find((entry) => entry.hash === hash);
 
-  if (hash !== correctHash) {
+  if (!match) {
     await recordFailure(env, key, state);
     const remaining = Math.max(0, MAX_ATTEMPTS - (state.count + 1));
     return json(env, {
@@ -191,7 +220,7 @@ async function handleAdminLogin(request, env) {
   const { password } = await request.json().catch(() => ({}));
   if (!password) return json(env, { error: "Password required" }, 400);
   const hash = await sha256Hex(password);
-  const correctHash = await getPasswordHash(env, "admin");
+  const correctHash = await getAdminPasswordHash(env);
 
   if (hash !== correctHash) {
     await recordFailure(env, key, state);
@@ -208,21 +237,67 @@ async function handleAdminLogin(request, env) {
   return json(env, { token, expires: Date.now() + ADMIN_TTL_MS });
 }
 
-async function handleChangePassword(request, env) {
+async function requireAdmin(request, env) {
   const auth = request.headers.get("Authorization") || "";
   const token = auth.replace(/^Bearer\s+/i, "");
-  if (!(await verifyToken(env.SIGNING_SECRET, token, "admin"))) {
+  return await verifyToken(env.SIGNING_SECRET, token, "admin");
+}
+
+async function handleChangePassword(request, env) {
+  if (!(await requireAdmin(request, env))) {
     return json(env, { error: "Unauthorized" }, 401);
   }
-  const { scope, newPassword } = await request.json().catch(() => ({}));
-  if (scope !== "view" && scope !== "admin") {
-    return json(env, { error: "scope must be 'view' or 'admin'" }, 400);
-  }
+  const { newPassword } = await request.json().catch(() => ({}));
   if (!newPassword || newPassword.length < 6) {
     return json(env, { error: "Password must be at least 6 characters" }, 400);
   }
   const hash = await sha256Hex(newPassword);
-  await setPasswordHash(env, scope, hash);
+  await setAdminPasswordHash(env, hash);
+  return json(env, { ok: true });
+}
+
+async function handleListGalleryPasswords(request, env) {
+  if (!(await requireAdmin(request, env))) {
+    return json(env, { error: "Unauthorized" }, 401);
+  }
+  const list = await getGalleryPasswordList(env);
+  return json(env, { passwords: list.map(({ id, label, createdAt }) => ({ id, label, createdAt })) });
+}
+
+async function handleAddGalleryPassword(request, env) {
+  if (!(await requireAdmin(request, env))) {
+    return json(env, { error: "Unauthorized" }, 401);
+  }
+  const { label, password } = await request.json().catch(() => ({}));
+  if (!password || password.length < 6) {
+    return json(env, { error: "Password must be at least 6 characters" }, 400);
+  }
+  const list = await getGalleryPasswordList(env);
+  const hash = await sha256Hex(password);
+  if (list.some((entry) => entry.hash === hash)) {
+    return json(env, { error: "That password already exists" }, 400);
+  }
+  const entry = { id: makeId(), label: (label || "Unnamed").trim().slice(0, 60), hash, createdAt: Date.now() };
+  list.push(entry);
+  await saveGalleryPasswordList(env, list);
+  return json(env, { ok: true, id: entry.id, label: entry.label, createdAt: entry.createdAt });
+}
+
+async function handleRemoveGalleryPassword(request, env) {
+  if (!(await requireAdmin(request, env))) {
+    return json(env, { error: "Unauthorized" }, 401);
+  }
+  const { id } = await request.json().catch(() => ({}));
+  if (!id) return json(env, { error: "id required" }, 400);
+  const list = await getGalleryPasswordList(env);
+  const filtered = list.filter((entry) => entry.id !== id);
+  if (filtered.length === list.length) {
+    return json(env, { error: "Password not found" }, 404);
+  }
+  if (filtered.length === 0) {
+    return json(env, { error: "At least one client password must remain" }, 400);
+  }
+  await saveGalleryPasswordList(env, filtered);
   return json(env, { ok: true });
 }
 
@@ -428,6 +503,15 @@ export default {
       }
       if (pathname === "/api/admin/change-password" && request.method === "POST") {
         return await handleChangePassword(request, env);
+      }
+      if (pathname === "/api/admin/gallery-passwords" && request.method === "GET") {
+        return await handleListGalleryPasswords(request, env);
+      }
+      if (pathname === "/api/admin/gallery-passwords/add" && request.method === "POST") {
+        return await handleAddGalleryPassword(request, env);
+      }
+      if (pathname === "/api/admin/gallery-passwords/remove" && request.method === "POST") {
+        return await handleRemoveGalleryPassword(request, env);
       }
       return json(env, { error: "Not found" }, 404);
     } catch (err) {
