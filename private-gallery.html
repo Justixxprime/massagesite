@@ -13,6 +13,17 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="css/style.css">
 <style>
+  /* This page has no scroll-based hero, so the nav must stay solid at all times
+     (main.js only adds the ".scrolled" look after scrollY > 40) */
+  #site-nav {
+    background: rgba(247, 243, 234, 0.92) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+    backdrop-filter: blur(14px) !important;
+    box-shadow: 0 8px 30px -12px rgba(50,8,28,0.15) !important;
+  }
+  [data-theme="dark"] #site-nav { background: rgba(40,6,20,0.92) !important; }
+  #utility-bar { max-height: 0 !important; opacity: 0 !important; }
+
   /* ---------- Page-specific: lock screen + gallery grid ---------- */
   input[type="password"] {
     border: 1.5px solid var(--cream-line);
@@ -27,7 +38,7 @@
   }
   input[type="password"]:focus { outline: none; border-color: var(--rose); box-shadow: 0 0 0 3px rgba(183,110,121,0.15); }
 
-  #lock-section { min-height: 100vh; position: relative; display: flex; align-items: center; overflow: hidden; }
+  #lock-section { min-height: 100vh; position: relative; display: flex; align-items: center; overflow: hidden; padding-top: 8.5rem; padding-bottom: 3rem; }
   #lock-section .cinematic-overlay { z-index: 1; }
   #lock-section .grain { z-index: 2; }
 
@@ -86,16 +97,22 @@
     100% { transform: translateY(105vh) translateX(40px) rotate(300deg); opacity: 0; }
   }
 
-  /* Gallery grid */
+  /* Gallery grid — masonry via CSS columns, like a real photo wall */
   #gallery-section { display: none; padding: 7.5rem 0 5rem; }
-  .g-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.1rem; }
+  .g-filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; margin-bottom: 2.5rem; }
+  .g-grid {
+    column-count: 2; column-gap: 1.1rem;
+  }
+  @media (min-width: 640px) { .g-grid { column-count: 3; } }
+  @media (min-width: 1024px) { .g-grid { column-count: 4; } }
   .g-tile {
     position: relative; border-radius: 1rem; overflow: hidden; cursor: pointer;
-    aspect-ratio: 4/3; background: var(--alabaster-dim);
-    box-shadow: var(--shadow-soft);
+    background: var(--alabaster-dim); box-shadow: var(--shadow-soft);
+    break-inside: avoid; margin-bottom: 1.1rem; display: block;
   }
+  .g-tile.filtered-out { display: none; }
   .g-tile img, .g-tile video {
-    width: 100%; height: 100%; object-fit: cover;
+    width: 100%; display: block; height: auto; max-height: 520px; object-fit: cover;
     filter: blur(26px) saturate(1.1);
     transform: scale(1.12);
     transition: filter 0.7s cubic-bezier(.2,.8,.2,1), transform 0.7s cubic-bezier(.2,.8,.2,1);
@@ -117,6 +134,14 @@
     background: rgba(33,29,25,0.55); color: #fff; font-size: 0.65rem;
     padding: 0.25rem 0.6rem; border-radius: 0.4rem; letter-spacing: 0.04em;
   }
+  .g-download {
+    position: absolute; bottom: 0.6rem; right: 0.6rem; z-index: 2;
+    width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    background: rgba(33,29,25,0.55); color: #fff; opacity: 0; transition: opacity 0.3s ease, background 0.2s ease;
+    text-decoration: none; font-size: 0.85rem;
+  }
+  .g-tile.revealed:hover .g-download { opacity: 1; }
+  .g-download:hover { background: var(--forest); }
 
   #gallery-loading, #gallery-empty { text-align: center; padding: 5rem 0; color: var(--ink-soft); }
   .spinner-ring {
@@ -157,13 +182,24 @@
     position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
     color: rgba(255,255,255,0.75); font-size: 0.8rem; letter-spacing: 0.05em; z-index: 210;
   }
+  #lightbox-download {
+    position: absolute; top: 1.5rem; right: 5.5rem; z-index: 210;
+    display: flex; align-items: center; gap: 0.5rem;
+    background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.3);
+    color: #fff; padding: 0.55rem 1rem; border-radius: 999px; font-size: 0.78rem;
+    text-decoration: none; transition: background 0.2s ease;
+  }
+  #lightbox-download:hover { background: rgba(255,255,255,0.25); }
+  @media (max-width: 640px) {
+    #lightbox-download { top: auto; bottom: 3.5rem; right: 50%; transform: translateX(50%); }
+  }
 </style>
 </head>
 <body class="bg-[var(--alabaster)]">
 
   <div id="scroll-progress"></div>
 
-<header id="site-nav" class="fixed top-0 left-0 right-0 z-50">
+<header id="site-nav" class="fixed top-0 left-0 right-0 z-50 scrolled">
     <div id="utility-bar" class="hidden sm:block">
       <div class="max-w-7xl mx-auto px-6 lg:px-10 py-2 flex items-center justify-between">
         <p><i class="fa-regular fa-clock mr-1"></i> Open Every Day · 8am – 8pm · By Appointment</p>
@@ -195,6 +231,7 @@
             <a href="faq.html" class="nav-link"><i class="fa-solid fa-circle-question"></i>FAQ</a>
             <a href="giftcards.html" class="nav-link"><i class="fa-solid fa-gift"></i>Gift Cards</a>
             <a href="policies.html" class="nav-link"><i class="fa-solid fa-file-shield"></i>Policies</a>
+            <a href="private-gallery.html" class="nav-link"><i class="fa-solid fa-lock"></i>Private Gallery</a>
             <div class="more-divider"></div>
             <a href="corporate.html" class="nav-link"><i class="fa-solid fa-building"></i>Corporate Wellness<span class="more-badge">New</span></a>
             <a href="referrals.html" class="nav-link"><i class="fa-solid fa-user-plus"></i>Referral Program<span class="more-badge">New</span></a>
@@ -246,6 +283,7 @@
           <a href="faq.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-circle-question"></i></span>FAQ</a>
           <a href="blog.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-feather"></i></span>Journal</a>
           <a href="policies.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-file-shield"></i></span>Policies</a>
+          <a href="private-gallery.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-lock"></i></span>Private Gallery</a>
 
           <div class="mobile-menu-divider"><span>More</span></div>
 
@@ -322,6 +360,7 @@
         <i class="fa-solid fa-images text-3xl mb-3" style="color:var(--rose-light)"></i>
         <p>Nothing has been added yet — check back soon.</p>
       </div>
+      <div class="g-filters" id="galleryFilters" style="display:none;"></div>
       <div class="g-grid" id="grid" style="display:none;"></div>
     </div>
   </section>
@@ -329,6 +368,7 @@
   <!-- Lightbox -->
   <div id="lightbox">
     <button id="lightbox-close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    <a id="lightbox-download" download><i class="fa-solid fa-download"></i><span>Save</span></a>
     <button id="lightbox-prev" aria-label="Previous" class="lightbox-nav lightbox-prev"><i class="fa-solid fa-chevron-left"></i></button>
     <button id="lightbox-next" aria-label="Next" class="lightbox-nav lightbox-next"><i class="fa-solid fa-chevron-right"></i></button>
     <div id="lightbox-content"></div>
@@ -444,17 +484,13 @@
   </button>
 
   <script src="js/main.js"></script>
-
-  
   <!-- =====================================================
-
-  
        PRIVATE GALLERY LOGIC
        Configure WORKER_URL below after deploying the Worker (see SETUP.md)
   ====================================================== -->
   <script>
   (function () {
-    const WORKER_URL = "https://amara-vale-gallery.amara-vale-gallery.workers.dev";
+    const WORKER_URL = "https://amara-vale-gallery.YOUR-SUBDOMAIN.workers.dev";
     const TOKEN_KEY = "av_gallery_token";
 
     const lockSection = document.getElementById("lock-section");
@@ -469,11 +505,13 @@
     const loadingEl = document.getElementById("gallery-loading");
     const emptyEl = document.getElementById("gallery-empty");
     const grid = document.getElementById("grid");
+    const galleryFilters = document.getElementById("galleryFilters");
     const lightbox = document.getElementById("lightbox");
     const lightboxContent = document.getElementById("lightbox-content");
     const lightboxCounter = document.getElementById("lightbox-counter");
     const lightboxPrev = document.getElementById("lightbox-prev");
     const lightboxNext = document.getElementById("lightbox-next");
+    const lightboxDownload = document.getElementById("lightbox-download");
 
     let currentItems = [];   // [{item, url}] in the order rendered
     let currentIndex = -1;
@@ -575,15 +613,53 @@
           currentItems.push({ item, url });
           grid.appendChild(buildTile(item, token, i, currentItems.length - 1));
         });
+        buildFilters(data.items);
       } catch {
         loadingEl.innerHTML = "<p>Something went wrong loading the gallery. Refresh to try again.</p>";
       }
+    }
+
+    function buildFilters(items) {
+      const categories = [...new Set(items.map((i) => i.category || "general"))];
+      if (categories.length <= 1) return; // nothing to filter
+      galleryFilters.style.display = "flex";
+      galleryFilters.innerHTML = "";
+
+      const allBtn = document.createElement("button");
+      allBtn.className = "filter-btn active px-5 py-2 rounded-full text-xs eyebrow";
+      allBtn.textContent = "All";
+      allBtn.dataset.filter = "all";
+      galleryFilters.appendChild(allBtn);
+
+      categories.forEach((cat) => {
+        const btn = document.createElement("button");
+        btn.className = "filter-btn px-5 py-2 rounded-full text-xs eyebrow";
+        btn.textContent = cat.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+        btn.dataset.filter = cat;
+        galleryFilters.appendChild(btn);
+      });
+
+      galleryFilters.querySelectorAll(".filter-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          galleryFilters.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          const filter = btn.dataset.filter;
+          grid.querySelectorAll(".g-tile").forEach((tile) => {
+            if (filter === "all" || tile.dataset.category === filter) {
+              tile.classList.remove("filtered-out");
+            } else {
+              tile.classList.add("filtered-out");
+            }
+          });
+        });
+      });
     }
 
     function buildTile(item, token, index, listIndex) {
       const url = `${WORKER_URL}/api/file/${encodeURIComponent(item.key)}?token=${encodeURIComponent(token)}`;
       const tile = document.createElement("div");
       tile.className = "g-tile reveal is-visible";
+      tile.dataset.category = item.category || "general";
       tile.style.transitionDelay = Math.min(index * 0.05, 0.6) + "s";
 
       const el = item.kind === "video" ? document.createElement("video") : document.createElement("img");
@@ -603,6 +679,15 @@
       hint.className = "g-hint";
       hint.innerHTML = '<i class="fa-solid fa-eye"></i><span>Tap to reveal</span>';
       tile.appendChild(hint);
+
+      const dl = document.createElement("a");
+      dl.className = "g-download";
+      dl.href = `${url}&download=1`;
+      dl.setAttribute("download", "");
+      dl.setAttribute("aria-label", "Save this file");
+      dl.innerHTML = '<i class="fa-solid fa-download"></i>';
+      dl.addEventListener("click", (e) => e.stopPropagation());
+      tile.appendChild(dl);
 
       // Gentle 3D tilt on hover, once revealed — matches the site's .tilt-card feel
       tile.addEventListener("mousemove", (e) => {
@@ -641,6 +726,7 @@
       lightboxCounter.textContent = `${currentIndex + 1} / ${currentItems.length}`;
       lightboxPrev.style.visibility = currentItems.length > 1 ? "visible" : "hidden";
       lightboxNext.style.visibility = currentItems.length > 1 ? "visible" : "hidden";
+      lightboxDownload.href = `${url}&download=1`;
     }
 
     function showPrev() {
