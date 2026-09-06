@@ -590,6 +590,7 @@
           return;
         }
         storeToken(data.token, data.expires);
+        window.showToast && window.showToast("Welcome. Your gallery is unlocked.");
         unlockAndReveal(data.token);
       } catch {
         lockError.textContent = "Couldn't reach the gallery. Check your connection.";
@@ -623,6 +624,7 @@
       loadingEl.style.display = "block";
       emptyEl.style.display = "none";
       grid.style.display = "none";
+      window.showToast && window.showToast("Logged out. The gallery is sealed again.");
     }
     document.getElementById("galleryLogoutBtn").addEventListener("click", logOut);
 
@@ -632,7 +634,9 @@
       if (!currentToken) return;
       const btn = e.currentTarget;
       btn.classList.add("spinning");
-      loadGallery(currentToken).finally(() => btn.classList.remove("spinning"));
+      loadGallery(currentToken).then(() => {
+        window.showToast && window.showToast(`Refreshed. Showing ${currentItems.length} item${currentItems.length === 1 ? "" : "s"}.`);
+      }).finally(() => btn.classList.remove("spinning"));
     });
 
     // If you switch away to upload something in another tab, then come back
@@ -743,7 +747,10 @@
       dl.setAttribute("download", "");
       dl.setAttribute("aria-label", "Save this file");
       dl.innerHTML = '<i class="fa-solid fa-download"></i>';
-      dl.addEventListener("click", (e) => e.stopPropagation());
+      dl.addEventListener("click", (e) => {
+        e.stopPropagation();
+        window.showToast && window.showToast("Downloading to your device…");
+      });
       tile.appendChild(dl);
 
       // Gentle 3D tilt on hover, once revealed — matches the site's .tilt-card feel
@@ -799,6 +806,10 @@
 
     lightboxPrev.addEventListener("click", (e) => { e.stopPropagation(); showPrev(); });
     lightboxNext.addEventListener("click", (e) => { e.stopPropagation(); showNext(); });
+    lightboxDownload.addEventListener("click", (e) => {
+      e.stopPropagation();
+      window.showToast && window.showToast("Downloading to your device…");
+    });
 
     document.getElementById("lightbox-close").addEventListener("click", closeLightbox);
     lightbox.addEventListener("click", (e) => { if (e.target === lightbox) closeLightbox(); });

@@ -628,6 +628,7 @@
     let adminToken = null;
     let totalFiles = 0;
     let doneFiles = 0;
+    let failedFiles = 0;
     let libraryItems = [];
     let selectedKeys = new Set();
     let activeCategory = "general";
@@ -774,7 +775,9 @@
     function handleFiles(files) {
       if (!files.length) return;
       completionBanner.style.display = "none";
-      totalFiles += files.length;
+      totalFiles = files.length;
+      doneFiles = 0;
+      failedFiles = 0;
       const items = files.map((file) => buildPreviewTile(file));
       runQueue(items);
     }
@@ -839,15 +842,19 @@
             status.className = "preview-status ok";
             status.innerHTML = '<i class="fa-solid fa-check"></i>';
           } else {
+            failedFiles++;
             status.className = "preview-status err";
             status.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+            status.title = `Server said: ${xhr.status} ${xhr.responseText || ""}`.trim();
           }
           resolve();
         };
         xhr.onerror = () => {
           doneFiles++;
+          failedFiles++;
           status.className = "preview-status err";
           status.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+          status.title = "Network or CORS error, check the browser console for details.";
           resolve();
         };
         xhr.send(file);
@@ -855,10 +862,23 @@
     }
 
     function checkCompletion() {
-      if (doneFiles >= totalFiles && totalFiles > 0) {
-        completionText.textContent = `${totalFiles} file${totalFiles > 1 ? "s" : ""} uploaded. The gallery is updated.`;
-        completionBanner.style.display = "block";
+      if (doneFiles < totalFiles || totalFiles === 0) return;
+      const succeeded = totalFiles - failedFiles;
+
+      if (failedFiles === 0) {
+        completionBanner.style.background = "linear-gradient(135deg, var(--rose-light), var(--gold))";
+        completionText.innerHTML = `${totalFiles} file${totalFiles > 1 ? "s" : ""} uploaded. The gallery is updated.`;
+        toast(`${totalFiles} file${totalFiles > 1 ? "s" : ""} uploaded`);
+      } else if (succeeded === 0) {
+        completionBanner.style.background = "linear-gradient(135deg, #b0233a, #7a1f2d)";
+        completionText.innerHTML = `All ${totalFiles} file${totalFiles > 1 ? "s" : ""} failed to upload. Check your connection and try again.`;
+        toast(`${totalFiles} file${totalFiles > 1 ? "s" : ""} failed to upload`, "error");
+      } else {
+        completionBanner.style.background = "linear-gradient(135deg, #c98a3a, #b0233a)";
+        completionText.innerHTML = `${succeeded} of ${totalFiles} uploaded. ${failedFiles} failed, check the red marks above.`;
+        toast(`${failedFiles} file${failedFiles > 1 ? "s" : ""} failed to upload`, "error");
       }
+      completionBanner.style.display = "block";
     }
 
     // ---------- Overview + Library data ----------

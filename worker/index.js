@@ -86,7 +86,7 @@ function corsHeaders(env) {
   return {
     "Access-Control-Allow-Origin": env.ALLOWED_ORIGIN || "*",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Filename",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Filename, X-Category",
   };
 }
 
