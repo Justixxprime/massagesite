@@ -528,6 +528,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 html, body { overflow-x: hidden; max-width: 100%; }
 /* Safe-area support for iPhone notch / home indicator */
 #utility-bar, #site-nav { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+#site-nav { padding-top: env(safe-area-inset-top); }
 .fixed.bottom-6 { bottom: calc(1.5rem + env(safe-area-inset-bottom)); }
 body { padding-bottom: env(safe-area-inset-bottom); }
 

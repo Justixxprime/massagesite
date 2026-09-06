@@ -144,9 +144,10 @@
   .g-download:hover { background: var(--forest); }
 
   #gallery-loading, #gallery-empty { text-align: center; padding: 5rem 0; color: var(--ink-soft); }
-  #galleryLogoutBtn:hover { border-color: var(--rose); color: var(--rose); }
+  #galleryLogoutBtn:hover, #galleryRefreshBtn:hover { border-color: var(--rose); color: var(--rose); }
+  #galleryRefreshBtn.spinning i { animation: spin-slow 0.6s linear infinite; }
   @media (max-width: 640px) {
-    #galleryLogoutBtn { position: static !important; display: inline-flex !important; margin: 0 auto 1rem; }
+    .text-center.mb-12 > div[style*="position:absolute"] { position: static !important; display: flex !important; justify-content: center; margin: 0 auto 1rem; }
   }
   .spinner-ring {
     width: 42px; height: 42px; border-radius: 50%; margin: 0 auto 1rem;
@@ -351,9 +352,14 @@
   <section id="gallery-section">
     <div class="max-w-7xl mx-auto px-6 lg:px-10">
       <div class="text-center mb-12 reveal is-visible" style="position:relative;">
-        <button type="button" id="galleryLogoutBtn" style="position:absolute;top:0;right:0;display:flex;align-items:center;gap:0.4rem;padding:0.5rem 1rem;border-radius:999px;border:1.5px solid var(--cream-line);background:#fff;color:var(--ink-soft);font-size:0.75rem;cursor:pointer;transition:all 0.2s ease;">
-          <i class="fa-solid fa-lock text-xs"></i><span>Log Out</span>
-        </button>
+        <div style="position:absolute;top:0;right:0;display:flex;gap:0.5rem;">
+          <button type="button" id="galleryRefreshBtn" style="display:flex;align-items:center;gap:0.4rem;padding:0.5rem 1rem;border-radius:999px;border:1.5px solid var(--cream-line);background:#fff;color:var(--ink-soft);font-size:0.75rem;cursor:pointer;transition:all 0.2s ease;">
+            <i class="fa-solid fa-rotate text-xs"></i><span>Refresh</span>
+          </button>
+          <button type="button" id="galleryLogoutBtn" style="display:flex;align-items:center;gap:0.4rem;padding:0.5rem 1rem;border-radius:999px;border:1.5px solid var(--cream-line);background:#fff;color:var(--ink-soft);font-size:0.75rem;cursor:pointer;transition:all 0.2s ease;">
+            <i class="fa-solid fa-lock text-xs"></i><span>Log Out</span>
+          </button>
+        </div>
         <p class="eyebrow" style="color:var(--rose)"><i class="fa-solid fa-heart"></i> Just For You</p>
         <h1 class="font-display font-semibold text-4xl mt-3" style="color:var(--forest)">Your Private Gallery</h1>
         <p class="mt-3 max-w-xl mx-auto" style="color:var(--ink-soft)">Tap any tile to bring it into focus, tap again to open it full-screen.</p>
@@ -604,6 +610,7 @@
 
     function logOut() {
       sessionStorage.removeItem(TOKEN_KEY);
+      currentToken = null;
       grid.innerHTML = "";
       currentItems = [];
       document.getElementById("galleryFilters").innerHTML = "";
@@ -619,8 +626,31 @@
     }
     document.getElementById("galleryLogoutBtn").addEventListener("click", logOut);
 
+    let currentToken = null;
+
+    document.getElementById("galleryRefreshBtn").addEventListener("click", (e) => {
+      if (!currentToken) return;
+      const btn = e.currentTarget;
+      btn.classList.add("spinning");
+      loadGallery(currentToken).finally(() => btn.classList.remove("spinning"));
+    });
+
+    // If you switch away to upload something in another tab, then come back
+    // to this one, quietly refresh so new files show up without a manual reload.
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible" && currentToken) {
+        loadGallery(currentToken);
+      }
+    });
+
     // ---------- Load + render gallery ----------
     async function loadGallery(token) {
+      currentToken = token;
+      grid.innerHTML = "";
+      currentItems = [];
+      emptyEl.style.display = "none";
+      grid.style.display = "none";
+      loadingEl.style.display = "block";
       try {
         const res = await fetch(`${WORKER_URL}/api/media?token=${encodeURIComponent(token)}`);
         const data = await res.json();

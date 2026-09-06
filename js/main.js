@@ -4,6 +4,47 @@
    easy to find and edit one piece without touching the others.
    ========================================================================== */
 
+/* ---------------------------------------------------------------------
+   GLOBAL TOAST — window.showToast(message, type). Available on every
+   page that loads this file. type is "ok" (default) or "error".
+--------------------------------------------------------------------- */
+window.showToast = function (message, type) {
+  let stack = document.getElementById('site-toast-stack');
+  if (!stack) {
+    stack = document.createElement('div');
+    stack.id = 'site-toast-stack';
+    stack.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:0.6rem;max-width:320px;';
+    document.body.appendChild(stack);
+  }
+  const isError = type === 'error';
+  const el = document.createElement('div');
+  el.style.cssText = [
+    'background:' + (isError ? '#7a1f2d' : '#5C1030'),
+    'color:#F7F3EA',
+    'padding:0.9rem 1.2rem',
+    'border-radius:0.75rem',
+    'box-shadow:0 15px 40px -10px rgba(0,0,0,0.4)',
+    'font-size:0.85rem',
+    'font-family:"Manrope",sans-serif',
+    'display:flex',
+    'align-items:center',
+    'gap:0.6rem',
+    'animation:site-toast-in 0.3s cubic-bezier(.2,.8,.2,1)',
+  ].join(';');
+  el.innerHTML = '<i class="fa-solid ' + (isError ? 'fa-circle-exclamation' : 'fa-circle-check') + '"></i><span>' + message + '</span>';
+  stack.appendChild(el);
+  setTimeout(() => {
+    el.style.animation = 'site-toast-out 0.25s ease forwards';
+    setTimeout(() => el.remove(), 250);
+  }, 3800);
+};
+if (!document.getElementById('site-toast-keyframes')) {
+  const style = document.createElement('style');
+  style.id = 'site-toast-keyframes';
+  style.textContent = '@keyframes site-toast-in{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}@keyframes site-toast-out{to{transform:translateX(20px);opacity:0}}';
+  document.head.appendChild(style);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 
   /* ---------------------------------------------------------------------
@@ -609,7 +650,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       } catch (err) {
         if (errorBox) {
-          errorBox.textContent = 'Something went wrong sending your request — please call or WhatsApp us directly, or try again in a moment.';
+          errorBox.textContent = 'Something went wrong sending your request. Please call or WhatsApp us directly, or try again in a moment.';
           errorBox.classList.remove('hidden');
         }
       } finally {
@@ -772,5 +813,44 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 400);
     }
   }
+
+  /* ---------------------------------------------------------------------
+     12. WEB3FORMS AJAX SUBMISSION — any form posting to Web3Forms gets
+         intercepted so submitting shows a toast instead of leaving the
+         page. Works for booking-form, giftcard-form, and any future form
+         built the same way, no per-form wiring needed.
+  --------------------------------------------------------------------- */
+  document.querySelectorAll('form[action*="web3forms.com"]').forEach((form) => {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalLabel = submitBtn ? submitBtn.innerHTML : '';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Sending…';
+      }
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: new FormData(form),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.success) {
+          window.showToast("Sent! We'll be in touch shortly.");
+          form.reset();
+        } else {
+          window.showToast(data.message || 'Something went wrong, please try again.', 'error');
+        }
+      } catch {
+        window.showToast("Couldn't send, check your connection and try again.", 'error');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalLabel;
+        }
+      }
+    });
+  });
 
 });

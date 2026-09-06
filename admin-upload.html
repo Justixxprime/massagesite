@@ -384,6 +384,10 @@
             <p style="font-size:0.8rem;margin-top:0.4rem;">Handles up to 100 at once, images and videos both</p>
           </div>
           <input type="file" id="fileInput" multiple accept="image/*,video/*">
+          <p style="font-size:0.78rem;color:var(--ink-soft);margin-top:0.75rem;display:flex;align-items:center;gap:0.4rem;">
+            <i class="fa-solid fa-circle-check" style="color:#2f7a45;"></i>
+            Once a file shows a green checkmark below, it's permanently saved. Reloading this page only clears these preview thumbnails, never the actual files.
+          </p>
 
           <div style="margin-top:1.25rem;">
             <p class="eyebrow" style="color:var(--rose);margin-bottom:0.6rem;">Category for this batch</p>
@@ -400,6 +404,9 @@
           <div id="completion-banner">
             <i class="fa-solid fa-champagne-glasses text-xl mb-1"></i>
             <p class="font-display text-lg" id="completionText">All done!</p>
+            <button type="button" id="viewInLibraryBtn" style="margin-top:0.75rem;padding:0.5rem 1.2rem;border-radius:999px;border:1.5px solid rgba(255,255,255,0.5);background:rgba(255,255,255,0.15);color:#fff;font-size:0.78rem;cursor:pointer;">
+              View in Library <i class="fa-solid fa-arrow-right text-xs"></i>
+            </button>
           </div>
         </div>
       </div>
@@ -720,15 +727,17 @@
     }
 
     // ---------- Tabs ----------
+    function switchToTab(name) {
+      document.querySelectorAll(".dash-tab").forEach((t) => t.classList.remove("active"));
+      document.querySelectorAll(".dash-panel").forEach((p) => p.classList.remove("active"));
+      document.querySelector(`.dash-tab[data-tab="${name}"]`).classList.add("active");
+      document.getElementById(`panel-${name}`).classList.add("active");
+      if (name === "library") { loadLibrary(); }
+    }
     document.querySelectorAll(".dash-tab").forEach((tab) => {
-      tab.addEventListener("click", () => {
-        document.querySelectorAll(".dash-tab").forEach((t) => t.classList.remove("active"));
-        document.querySelectorAll(".dash-panel").forEach((p) => p.classList.remove("active"));
-        tab.classList.add("active");
-        document.getElementById(`panel-${tab.dataset.tab}`).classList.add("active");
-        if (tab.dataset.tab === "library") renderLibrary();
-      });
+      tab.addEventListener("click", () => switchToTab(tab.dataset.tab));
     });
+    document.getElementById("viewInLibraryBtn").addEventListener("click", () => switchToTab("library"));
 
     // ---------- Upload (category chips) ----------
     document.getElementById("categoryChips").addEventListener("click", (e) => {
