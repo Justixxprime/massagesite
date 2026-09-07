@@ -158,7 +158,6 @@
   .g-meta-text { min-width: 0; }
   .g-meta-title { font-size: 0.85rem; font-weight: 600; color: var(--ink); text-transform: capitalize;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .g-meta-sub { font-size: 0.74rem; color: var(--ink-soft); margin-top: 0.1rem; }
 
 
   #gallery-loading, #gallery-empty { text-align: center; padding: 5rem 0; color: var(--ink-soft); }
@@ -800,12 +799,10 @@
       const meta = document.createElement("div");
       meta.className = "g-meta";
       const catLabel = (item.category || "general").replace(/-/g, " ");
-      const dateLabel = item.uploaded ? formatRelativeDate(item.uploaded) : "";
       meta.innerHTML = `
         <div class="g-meta-icon"><i class="fa-solid ${item.kind === "video" ? "fa-video" : "fa-image"}"></i></div>
         <div class="g-meta-text">
           <div class="g-meta-title">${catLabel}</div>
-          <div class="g-meta-sub">${dateLabel}</div>
         </div>
       `;
       card.appendChild(meta);
@@ -817,19 +814,6 @@
       const m = Math.floor(seconds / 60);
       const s = Math.floor(seconds % 60).toString().padStart(2, "0");
       return `${m}:${s}`;
-    }
-
-    function formatRelativeDate(isoString) {
-      const then = new Date(isoString);
-      const diffMs = Date.now() - then.getTime();
-      const days = Math.floor(diffMs / 86400000);
-      if (days <= 0) return "Today";
-      if (days === 1) return "1 day ago";
-      if (days < 30) return `${days} days ago`;
-      const months = Math.floor(days / 30);
-      if (months < 12) return `${months} month${months > 1 ? "s" : ""} ago`;
-      const years = Math.floor(months / 12);
-      return `${years} year${years > 1 ? "s" : ""} ago`;
     }
 
     function openLightbox(index) {
