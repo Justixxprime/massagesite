@@ -97,30 +97,30 @@
     100% { transform: translateY(105vh) translateX(40px) rotate(300deg); opacity: 0; }
   }
 
-  /* Gallery grid — masonry via CSS columns, like a real photo wall */
+  /* Gallery grid — uniform cards, YouTube-style: fixed shape, cropped thumbnails,
+     a title row underneath. Works cleanly whether there's 1 item or 100. */
   #gallery-section { display: none; padding: 7.5rem 0 5rem; }
   .g-filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; margin-bottom: 2.5rem; }
   .g-grid {
-    column-count: 2; column-gap: 1.1rem;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem 1.25rem;
   }
-  @media (min-width: 640px) { .g-grid { column-count: 3; } }
-  @media (min-width: 1024px) { .g-grid { column-count: 4; } }
+  .g-card { display: flex; flex-direction: column; }
+  .g-card.filtered-out { display: none; }
   .g-tile {
-    position: relative; border-radius: 1rem; overflow: hidden; cursor: pointer;
+    position: relative; border-radius: 0.9rem; overflow: hidden; cursor: pointer;
     background: var(--alabaster-dim); box-shadow: var(--shadow-soft);
-    break-inside: avoid; margin-bottom: 1.1rem; display: block;
+    aspect-ratio: 16 / 9;
   }
-  .g-tile.filtered-out { display: none; }
   .g-tile img, .g-tile video {
-    width: 100%; display: block; height: auto; max-height: 520px; object-fit: cover;
+    width: 100%; height: 100%; display: block; object-fit: cover;
     filter: blur(26px) saturate(1.1);
     transform: scale(1.12);
     transition: filter 0.7s cubic-bezier(.2,.8,.2,1), transform 0.7s cubic-bezier(.2,.8,.2,1);
   }
   .g-tile.revealed img, .g-tile.revealed video { filter: blur(0); transform: scale(1); }
   .g-tile:not(.revealed):hover img, .g-tile:not(.revealed):hover video { transform: scale(1.16); }
-  .g-tile.revealed { transition: transform 0.4s cubic-bezier(.2,.8,.2,1), box-shadow 0.4s ease; transform-style: preserve-3d; }
-  .g-tile.revealed:hover { transform: perspective(900px) rotateX(2deg) rotateY(-3deg) translateY(-6px) scale(1.02); }
+  .g-tile.revealed { transition: transform 0.3s cubic-bezier(.2,.8,.2,1), box-shadow 0.3s ease; }
+  .g-tile.revealed:hover { transform: translateY(-4px) scale(1.015); box-shadow: 0 20px 45px -15px rgba(50,8,28,0.35); }
 
   .g-hint {
     position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -130,18 +130,36 @@
   .g-hint span { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; }
   .g-tile.revealed .g-hint { opacity: 0; pointer-events: none; }
   .g-badge {
-    position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2;
-    background: rgba(33,29,25,0.55); color: #fff; font-size: 0.65rem;
-    padding: 0.25rem 0.6rem; border-radius: 0.4rem; letter-spacing: 0.04em;
+    position: absolute; top: 0.55rem; right: 0.55rem; z-index: 2;
+    background: rgba(20,8,14,0.72); color: #fff; font-size: 0.65rem;
+    padding: 0.25rem 0.55rem; border-radius: 0.35rem; letter-spacing: 0.03em;
+  }
+  .g-duration {
+    position: absolute; bottom: 0.5rem; right: 0.5rem; z-index: 2;
+    background: rgba(20,8,14,0.82); color: #fff; font-size: 0.68rem; font-weight: 600;
+    padding: 0.15rem 0.45rem; border-radius: 0.3rem; letter-spacing: 0.02em;
   }
   .g-download {
-    position: absolute; bottom: 0.6rem; right: 0.6rem; z-index: 2;
-    width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    background: rgba(33,29,25,0.55); color: #fff; opacity: 0; transition: opacity 0.3s ease, background 0.2s ease;
-    text-decoration: none; font-size: 0.85rem;
+    position: absolute; bottom: 0.55rem; left: 0.55rem; z-index: 2;
+    width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    background: rgba(20,8,14,0.72); color: #fff; opacity: 0; transition: opacity 0.25s ease, background 0.2s ease;
+    text-decoration: none; font-size: 0.8rem;
   }
   .g-tile.revealed:hover .g-download { opacity: 1; }
   .g-download:hover { background: var(--forest); }
+
+  /* Title row under each thumbnail, like a video platform's card caption */
+  .g-meta { padding: 0.65rem 0.15rem 0; display: flex; align-items: flex-start; gap: 0.5rem; }
+  .g-meta-icon {
+    flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--alabaster-dim); color: var(--rose); font-size: 0.7rem; margin-top: 0.1rem;
+  }
+  .g-meta-text { min-width: 0; }
+  .g-meta-title { font-size: 0.85rem; font-weight: 600; color: var(--ink); text-transform: capitalize;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .g-meta-sub { font-size: 0.74rem; color: var(--ink-soft); margin-top: 0.1rem; }
+
 
   #gallery-loading, #gallery-empty { text-align: center; padding: 5rem 0; color: var(--ink-soft); }
   #galleryLogoutBtn:hover, #galleryRefreshBtn:hover { border-color: var(--rose); color: var(--rose); }
@@ -705,11 +723,11 @@
           galleryFilters.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"));
           btn.classList.add("active");
           const filter = btn.dataset.filter;
-          grid.querySelectorAll(".g-tile").forEach((tile) => {
-            if (filter === "all" || tile.dataset.category === filter) {
-              tile.classList.remove("filtered-out");
+          grid.querySelectorAll(".g-card").forEach((card) => {
+            if (filter === "all" || card.dataset.category === filter) {
+              card.classList.remove("filtered-out");
             } else {
-              tile.classList.add("filtered-out");
+              card.classList.add("filtered-out");
             }
           });
         });
@@ -718,10 +736,14 @@
 
     function buildTile(item, token, index, listIndex) {
       const url = `${WORKER_URL}/api/file/${encodeURIComponent(item.key)}?token=${encodeURIComponent(token)}`;
+
+      const card = document.createElement("div");
+      card.className = "g-card reveal is-visible";
+      card.dataset.category = item.category || "general";
+      card.style.transitionDelay = Math.min(index * 0.05, 0.6) + "s";
+
       const tile = document.createElement("div");
-      tile.className = "g-tile reveal is-visible";
-      tile.dataset.category = item.category || "general";
-      tile.style.transitionDelay = Math.min(index * 0.05, 0.6) + "s";
+      tile.className = "g-tile";
 
       const el = item.kind === "video" ? document.createElement("video") : document.createElement("img");
       if (item.kind === "video") {
@@ -735,6 +757,17 @@
       badge.className = "g-badge";
       badge.innerHTML = item.kind === "video" ? '<i class="fa-solid fa-play"></i> Video' : '<i class="fa-solid fa-image"></i> Photo';
       tile.appendChild(badge);
+
+      // YouTube-style duration badge, filled in once the video reveals its length
+      if (item.kind === "video") {
+        const duration = document.createElement("div");
+        duration.className = "g-duration";
+        duration.textContent = "";
+        el.addEventListener("loadedmetadata", () => {
+          if (isFinite(el.duration)) duration.textContent = formatDuration(el.duration);
+        });
+        tile.appendChild(duration);
+      }
 
       const hint = document.createElement("div");
       hint.className = "g-hint";
@@ -753,16 +786,6 @@
       });
       tile.appendChild(dl);
 
-      // Gentle 3D tilt on hover, once revealed — matches the site's .tilt-card feel
-      tile.addEventListener("mousemove", (e) => {
-        if (!tile.classList.contains("revealed")) return;
-        const rect = tile.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width - 0.5;
-        const y = (e.clientY - rect.top) / rect.height - 0.5;
-        tile.style.transform = `perspective(900px) rotateX(${y * -6}deg) rotateY(${x * 8}deg) translateY(-4px)`;
-      });
-      tile.addEventListener("mouseleave", () => { tile.style.transform = ""; });
-
       tile.addEventListener("click", () => {
         if (!tile.classList.contains("revealed")) {
           tile.classList.add("revealed");
@@ -771,7 +794,42 @@
         openLightbox(listIndex);
       });
 
-      return tile;
+      card.appendChild(tile);
+
+      // Title row underneath, like a video platform card caption
+      const meta = document.createElement("div");
+      meta.className = "g-meta";
+      const catLabel = (item.category || "general").replace(/-/g, " ");
+      const dateLabel = item.uploaded ? formatRelativeDate(item.uploaded) : "";
+      meta.innerHTML = `
+        <div class="g-meta-icon"><i class="fa-solid ${item.kind === "video" ? "fa-video" : "fa-image"}"></i></div>
+        <div class="g-meta-text">
+          <div class="g-meta-title">${catLabel}</div>
+          <div class="g-meta-sub">${dateLabel}</div>
+        </div>
+      `;
+      card.appendChild(meta);
+
+      return card;
+    }
+
+    function formatDuration(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60).toString().padStart(2, "0");
+      return `${m}:${s}`;
+    }
+
+    function formatRelativeDate(isoString) {
+      const then = new Date(isoString);
+      const diffMs = Date.now() - then.getTime();
+      const days = Math.floor(diffMs / 86400000);
+      if (days <= 0) return "Today";
+      if (days === 1) return "1 day ago";
+      if (days < 30) return `${days} days ago`;
+      const months = Math.floor(days / 30);
+      if (months < 12) return `${months} month${months > 1 ? "s" : ""} ago`;
+      const years = Math.floor(months / 12);
+      return `${years} year${years > 1 ? "s" : ""} ago`;
     }
 
     function openLightbox(index) {
