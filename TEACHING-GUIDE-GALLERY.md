@@ -171,3 +171,51 @@ to change.
   lockout working as designed. Either wait it out, or temporarily raise
   `MAX_ATTEMPTS` in `index.js` while you're testing, then lower it back
   before sending the real password to your client.
+
+---
+
+## 8. Why viewing and downloading needed two separate passwords
+
+This is the newest piece, so it gets its own baby-steps walkthrough.
+
+Think back to the bouncer analogy. Originally the bouncer only checked one
+thing: "does this password match the list of people allowed in?" Once you
+were in, you could see everything and save everything.
+
+Now the bouncer checks a *second* thing before handing over an actual file
+to save: "does this person also have the download wristband?" Seeing the
+gallery and saving a file are treated as two different favors, each needing
+its own password, because a client you trust to *look* isn't automatically
+someone you want to be able to *keep a permanent copy*.
+
+Here's the flow, step by step, from a client's point of view:
+
+1. They open `private-gallery.html`, type the regular client password.
+   Nothing about this changed. They can see thumbnails, tap to reveal them,
+   open the full-screen viewer.
+2. They click the download button on something. Instead of the file just
+   saving, a second little popup appears asking for a *different*
+   password, the download password.
+3. If they don't have it, nothing downloads. They can still look at
+   everything, they just can't save it.
+4. If they type the correct download password once, that unlocks
+   downloading for the rest of that visit, they don't have to re-type it
+   for every single file.
+
+From your side, in `admin-upload.html` → Settings → Download Access:
+
+- If you never set a download password, this feature is simply off,
+  nobody, including a client with the right gallery password, can download
+  anything. This is the safe default.
+- The moment you type a password there and click "Set Download Password",
+  downloading turns on for anyone who has that specific password.
+- You (logged in as admin) can always download from the Library tab, with
+  or without a download password set, since being admin already proves
+  who you are.
+
+One more thing worth knowing: this download password is a single password,
+not a list like the client passwords are. If you want different download
+permissions for different people later, say so, the same list-based pattern
+used for client passwords can be reused for downloads too, it just wasn't
+built that way by default since most studios want one simple on/off switch
+for "can this person save files."

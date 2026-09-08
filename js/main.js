@@ -264,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
   --------------------------------------------------------------------- */
   document.querySelectorAll('.custom-select').forEach(customSelect => {
     const trigger = customSelect.querySelector('.custom-select-trigger');
-    const label = trigger.querySelector('span');
+    const label = trigger ? trigger.querySelector('span') : null;
     const hiddenInput = customSelect.querySelector('input[type="hidden"]');
     const options = customSelect.querySelectorAll('.custom-select-option');
     if (!trigger || !label || !hiddenInput) return;

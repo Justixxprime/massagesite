@@ -24,6 +24,11 @@
   [data-theme="dark"] #site-nav { background: rgba(40,6,20,0.92) !important; }
   #utility-bar { max-height: 0 !important; opacity: 0 !important; }
 
+  /* This page has several z-indexed decorative layers (grain, orbs,
+     lightbox at z-index 200+). Force the mobile menu above all of them,
+     no matter what, so it can never render underneath page decoration. */
+  .mobile-menu-overlay { z-index: 9999 !important; }
+
   /* ---------- Page-specific: lock screen + gallery grid ---------- */
   input[type="password"] {
     border: 1.5px solid var(--cream-line);
@@ -210,11 +215,42 @@
     background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.3);
     color: #fff; padding: 0.55rem 1rem; border-radius: 999px; font-size: 0.78rem;
     text-decoration: none; transition: background 0.2s ease;
+    font-family: inherit; cursor: pointer;
   }
   #lightbox-download:hover { background: rgba(255,255,255,0.25); }
   @media (max-width: 640px) {
     #lightbox-download { top: auto; bottom: 3.5rem; right: 50%; transform: translateX(50%); }
   }
+
+  /* ---------- Download password modal ---------- */
+  #downloadModal {
+    position: fixed; inset: 0; z-index: 300; background: rgba(20,8,14,0.7);
+    display: none; align-items: center; justify-content: center; padding: 1.5rem;
+  }
+  #downloadModal.open { display: flex; animation: page-fade-in 0.2s ease; }
+  .download-modal-card {
+    background: var(--card-bg); border-radius: 1.25rem; padding: 2.25rem;
+    max-width: 400px; width: 100%; text-align: center; box-shadow: var(--shadow-soft);
+  }
+  .download-modal-seal {
+    width: 52px; height: 52px; border-radius: 50%; margin: 0 auto 1rem;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--alabaster-dim); color: var(--forest); font-size: 1.1rem;
+  }
+  .download-modal-card h3 { font-family: 'Playfair Display', serif; color: var(--forest); font-size: 1.25rem; margin: 0 0 0.6rem; }
+  .download-modal-card p { color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 1.25rem; line-height: 1.5; }
+  #downloadPasswordInput {
+    border: 1.5px solid var(--cream-line); border-radius: 0.75rem; padding: 0.9rem 1.1rem;
+    background: #fff; width: 100%; box-sizing: border-box; font-family: 'Manrope', sans-serif; font-size: 0.95rem;
+  }
+  #downloadPasswordInput:focus { outline: none; border-color: var(--rose); }
+  .download-modal-actions { display: flex; gap: 0.6rem; margin-top: 0.9rem; }
+  .download-modal-actions button {
+    flex: 1; padding: 0.75rem; border-radius: 0.6rem; font-family: inherit; font-size: 0.85rem; cursor: pointer; border: none;
+  }
+  #downloadModalCancel { background: var(--alabaster-dim); color: var(--ink); }
+  #downloadModalSubmit { background: var(--forest); color: var(--alabaster); }
+  #downloadModalError { color: #b0233a; font-size: 0.82rem; margin-top: 0.75rem; min-height: 1.2em; }
 </style>
 </head>
 <body class="bg-[var(--alabaster)]">
@@ -398,11 +434,28 @@
   <!-- Lightbox -->
   <div id="lightbox">
     <button id="lightbox-close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
-    <a id="lightbox-download" download><i class="fa-solid fa-download"></i><span>Save</span></a>
+    <button id="lightbox-download" type="button"><i class="fa-solid fa-download"></i><span>Save</span></button>
     <button id="lightbox-prev" aria-label="Previous" class="lightbox-nav lightbox-prev"><i class="fa-solid fa-chevron-left"></i></button>
     <button id="lightbox-next" aria-label="Next" class="lightbox-nav lightbox-next"><i class="fa-solid fa-chevron-right"></i></button>
     <div id="lightbox-content"></div>
     <div id="lightbox-counter"></div>
+  </div>
+
+  <!-- Download password modal -->
+  <div id="downloadModal">
+    <div class="download-modal-card">
+      <div class="download-modal-seal"><i class="fa-solid fa-lock"></i></div>
+      <h3>Saving Requires a Second Password</h3>
+      <p>Viewing and downloading are protected separately. Enter the download password to save files to your device.</p>
+      <form id="downloadUnlockForm" autocomplete="off">
+        <input type="password" id="downloadPasswordInput" placeholder="Download password" required>
+        <div class="download-modal-actions">
+          <button type="button" id="downloadModalCancel">Cancel</button>
+          <button type="submit" id="downloadModalSubmit">Unlock Downloads</button>
+        </div>
+      </form>
+      <p id="downloadModalError"></p>
+    </div>
   </div>
 
 <footer style="background:#350A1D">
@@ -523,6 +576,7 @@
   (function () {
     const WORKER_URL = "https://amara-vale-gallery.amara-vale-gallery.workers.dev";
     const TOKEN_KEY = "av_gallery_token";
+    const DOWNLOAD_TOKEN_KEY = "av_download_token";
 
     const lockSection = document.getElementById("lock-section");
     const gallerySection = document.getElementById("gallery-section");
@@ -543,9 +597,16 @@
     const lightboxPrev = document.getElementById("lightbox-prev");
     const lightboxNext = document.getElementById("lightbox-next");
     const lightboxDownload = document.getElementById("lightbox-download");
+    const downloadModal = document.getElementById("downloadModal");
+    const downloadUnlockForm = document.getElementById("downloadUnlockForm");
+    const downloadPasswordInput = document.getElementById("downloadPasswordInput");
+    const downloadModalError = document.getElementById("downloadModalError");
+    const downloadModalSubmit = document.getElementById("downloadModalSubmit");
+    const downloadModalCancel = document.getElementById("downloadModalCancel");
 
     let currentItems = [];   // [{item, url}] in the order rendered
     let currentIndex = -1;
+    let pendingDownload = null; // { url, filename } waiting on the password modal
 
     // ---------- Falling petals, pure CSS + JS, no library ----------
     function spawnPetals() {
@@ -577,6 +638,90 @@
     function storeToken(token, expires) {
       sessionStorage.setItem(TOKEN_KEY, JSON.stringify({ token, expires }));
     }
+
+    // ---------- Download token storage (separate password, separate token) ----------
+    function getStoredDownloadToken() {
+      try {
+        const raw = sessionStorage.getItem(DOWNLOAD_TOKEN_KEY);
+        if (!raw) return null;
+        const { token, expires } = JSON.parse(raw);
+        if (Date.now() > expires) return null;
+        return token;
+      } catch { return null; }
+    }
+    function storeDownloadToken(token, expires) {
+      sessionStorage.setItem(DOWNLOAD_TOKEN_KEY, JSON.stringify({ token, expires }));
+    }
+
+    function triggerBrowserDownload(url) {
+      const a = document.createElement("a");
+      a.href = url;
+      a.setAttribute("download", "");
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    // Called by every download button. If we already unlocked downloads this
+    // session, go straight through. Otherwise, ask for the download password
+    // first and remember what was being downloaded so it can resume after.
+    function requestDownload(baseUrl) {
+      const dtoken = getStoredDownloadToken();
+      if (dtoken) {
+        triggerBrowserDownload(`${baseUrl}&download=1&dtoken=${encodeURIComponent(dtoken)}`);
+        window.showToast && window.showToast("Downloading to your device…");
+        return;
+      }
+      pendingDownload = { url: baseUrl };
+      downloadModalError.textContent = "";
+      downloadPasswordInput.value = "";
+      downloadModal.classList.add("open");
+      setTimeout(() => downloadPasswordInput.focus(), 50);
+    }
+
+    downloadModalCancel.addEventListener("click", () => {
+      downloadModal.classList.remove("open");
+      pendingDownload = null;
+    });
+    downloadModal.addEventListener("click", (e) => {
+      if (e.target === downloadModal) {
+        downloadModal.classList.remove("open");
+        pendingDownload = null;
+      }
+    });
+
+    downloadUnlockForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const password = downloadPasswordInput.value;
+      downloadModalError.textContent = "";
+      downloadModalSubmit.disabled = true;
+      downloadModalSubmit.textContent = "Checking…";
+      try {
+        const res = await fetch(`${WORKER_URL}/api/unlock-download`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          downloadModalError.textContent = data.error || "That password didn't work.";
+          return;
+        }
+        storeDownloadToken(data.token, data.expires);
+        downloadModal.classList.remove("open");
+        window.showToast && window.showToast("Downloads unlocked for this visit.");
+        if (pendingDownload) {
+          triggerBrowserDownload(`${pendingDownload.url}&download=1&dtoken=${encodeURIComponent(data.token)}`);
+          window.showToast && window.showToast("Downloading to your device…");
+          pendingDownload = null;
+        }
+      } catch {
+        downloadModalError.textContent = "Couldn't reach the server, check your connection.";
+      } finally {
+        downloadModalSubmit.disabled = false;
+        downloadModalSubmit.textContent = "Unlock Downloads";
+      }
+    });
 
     // ---------- Unlock flow ----------
     unlockForm.addEventListener("submit", async (e) => {
@@ -628,6 +773,7 @@
 
     function logOut() {
       sessionStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(DOWNLOAD_TOKEN_KEY);
       currentToken = null;
       grid.innerHTML = "";
       currentItems = [];
@@ -773,15 +919,14 @@
       hint.innerHTML = '<i class="fa-solid fa-eye"></i><span>Tap to reveal</span>';
       tile.appendChild(hint);
 
-      const dl = document.createElement("a");
+      const dl = document.createElement("button");
+      dl.type = "button";
       dl.className = "g-download";
-      dl.href = `${url}&download=1`;
-      dl.setAttribute("download", "");
       dl.setAttribute("aria-label", "Save this file");
       dl.innerHTML = '<i class="fa-solid fa-download"></i>';
       dl.addEventListener("click", (e) => {
         e.stopPropagation();
-        window.showToast && window.showToast("Downloading to your device…");
+        requestDownload(url);
       });
       tile.appendChild(dl);
 
@@ -832,7 +977,7 @@
       lightboxCounter.textContent = `${currentIndex + 1} / ${currentItems.length}`;
       lightboxPrev.style.visibility = currentItems.length > 1 ? "visible" : "hidden";
       lightboxNext.style.visibility = currentItems.length > 1 ? "visible" : "hidden";
-      lightboxDownload.href = `${url}&download=1`;
+      lightboxDownload.dataset.url = url;
     }
 
     function showPrev() {
@@ -850,7 +995,7 @@
     lightboxNext.addEventListener("click", (e) => { e.stopPropagation(); showNext(); });
     lightboxDownload.addEventListener("click", (e) => {
       e.stopPropagation();
-      window.showToast && window.showToast("Downloading to your device…");
+      requestDownload(lightboxDownload.dataset.url);
     });
 
     document.getElementById("lightbox-close").addEventListener("click", closeLightbox);

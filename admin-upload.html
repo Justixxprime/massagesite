@@ -21,6 +21,7 @@
   }
   [data-theme="dark"] #site-nav { background: rgba(40,6,20,0.92) !important; }
   #utility-bar { max-height: 0 !important; opacity: 0 !important; }
+  .mobile-menu-overlay { z-index: 9999 !important; }
 
   input[type="password"] {
     border: 1.5px solid var(--cream-line); border-radius: 0.75rem; padding: 1rem 1.25rem;
@@ -470,6 +471,22 @@
             </div>
             <button type="button" class="btn-rose mt-2" id="addGalleryPassword" style="font-size:0.8rem;padding:0.7rem 1.4rem;">Add Password</button>
             <p id="galleryPasswordMsg" style="font-size:0.82rem;margin-top:0.5rem;min-height:1.2em;"></p>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <p class="eyebrow" style="color:var(--rose)"><i class="fa-solid fa-download"></i> Download Access</p>
+          <h2 class="font-display font-semibold text-xl mt-2 mb-1" style="color:var(--forest)">Download Password</h2>
+          <p style="color:var(--ink-soft);font-size:0.9rem;margin-bottom:1.25rem;">
+            A second, separate password. Clients can browse the gallery without it, but need this one
+            specifically to save any photo or video to their device. Leave it unset and downloads stay
+            fully disabled for everyone but you.
+          </p>
+          <p id="downloadPasswordStatus" style="font-size:0.82rem;margin-bottom:0.9rem;"></p>
+          <div>
+            <input type="password" id="newDownloadPassword" placeholder="Download password (min 6 characters)">
+            <button type="button" class="btn-rose mt-2" id="saveDownloadPassword" style="font-size:0.8rem;padding:0.7rem 1.4rem;">Set Download Password</button>
+            <p id="downloadPasswordMsg" style="font-size:0.82rem;margin-top:0.5rem;min-height:1.2em;"></p>
           </div>
         </div>
 
@@ -1292,10 +1309,63 @@
       }
     });
 
+    // ---------- Settings: download password ----------
+    async function loadDownloadPasswordStatus() {
+      const statusEl = document.getElementById("downloadPasswordStatus");
+      try {
+        const res = await fetch(`${WORKER_URL}/api/admin/download-password-status`, {
+          headers: { Authorization: `Bearer ${adminToken}` },
+        });
+        const data = await res.json();
+        if (!res.ok) { statusEl.textContent = ""; return; }
+        statusEl.innerHTML = data.enabled
+          ? '<i class="fa-solid fa-circle-check" style="color:#2f7a45;"></i> Downloads are currently enabled with a password.'
+          : '<i class="fa-solid fa-circle-exclamation" style="color:#b0233a;"></i> No download password set yet, downloads are fully disabled for clients.';
+      } catch {
+        statusEl.textContent = "";
+      }
+    }
+
+    document.getElementById("saveDownloadPassword").addEventListener("click", async () => {
+      const input = document.getElementById("newDownloadPassword");
+      const msg = document.getElementById("downloadPasswordMsg");
+      const newPassword = input.value;
+      msg.style.color = "";
+      if (newPassword.length < 6) {
+        msg.style.color = "#b0233a";
+        msg.textContent = "Password must be at least 6 characters.";
+        return;
+      }
+      try {
+        const res = await fetch(`${WORKER_URL}/api/admin/download-password`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${adminToken}` },
+          body: JSON.stringify({ newPassword }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          msg.style.color = "#b0233a";
+          msg.textContent = data.error || "Couldn't set download password.";
+          return;
+        }
+        msg.style.color = "#2f7a45";
+        msg.textContent = "Set. Anyone who already has it can start saving files right away.";
+        input.value = "";
+        toast("Download password set");
+        loadDownloadPasswordStatus();
+      } catch {
+        msg.style.color = "#b0233a";
+        msg.textContent = "Couldn't reach the server.";
+      }
+    });
+
     // Load the password list whenever Settings tab is opened, plus once on first dashboard entry
     document.querySelectorAll(".dash-tab").forEach((tab) => {
       if (tab.dataset.tab === "settings") {
-        tab.addEventListener("click", loadGalleryPasswords);
+        tab.addEventListener("click", () => {
+          loadGalleryPasswords();
+          loadDownloadPasswordStatus();
+        });
       }
     });
 

@@ -26,6 +26,7 @@
 
 const VIEW_TTL_MS = 4 * 60 * 60 * 1000;   // 4 hours for clients
 const ADMIN_TTL_MS = 2 * 60 * 60 * 1000;  // 2 hours for admin uploads
+const DOWNLOAD_TTL_MS = 4 * 60 * 60 * 1000; // 4 hours for download permission
 
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_SECONDS = 15 * 60; // 15 minutes
@@ -151,6 +152,17 @@ async function setAdminPasswordHash(env, hash) {
   await env.RATE_LIMIT.put("password:admin", hash);
 }
 
+// Download password: a single hash, same pattern as admin. Separate from the
+// view password(s), so seeing the gallery and saving files are two different
+// permissions. Defaults to unset (no downloads allowed) until an admin sets one.
+async function getDownloadPasswordHash(env) {
+  return await env.RATE_LIMIT.get("password:download");
+}
+
+async function setDownloadPasswordHash(env, hash) {
+  await env.RATE_LIMIT.put("password:download", hash);
+}
+
 async function getGalleryPasswordList(env) {
   const raw = await env.RATE_LIMIT.get("password:view");
   if (raw) {
@@ -256,6 +268,60 @@ async function handleChangePassword(request, env) {
   return json(env, { ok: true });
 }
 
+async function handleUnlockDownload(request, env) {
+  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+  const { key, state } = await getAttemptState(env, ip, "download");
+
+  if (state.lockedUntil && Date.now() < state.lockedUntil) {
+    const waitSec = Math.ceil((state.lockedUntil - Date.now()) / 1000);
+    return json(env, { error: `Too many attempts. Try again in ${Math.ceil(waitSec / 60)} minute(s).` }, 429);
+  }
+
+  const correctHash = await getDownloadPasswordHash(env);
+  if (!correctHash) {
+    return json(env, { error: "Downloads haven't been enabled yet. Ask the studio to set a download password." }, 400);
+  }
+
+  const { password } = await request.json().catch(() => ({}));
+  if (!password) return json(env, { error: "Password required" }, 400);
+  const hash = await sha256Hex(password);
+
+  if (hash !== correctHash) {
+    await recordFailure(env, key, state);
+    const remaining = Math.max(0, MAX_ATTEMPTS - (state.count + 1));
+    return json(env, {
+      error: remaining > 0
+        ? `Incorrect password. ${remaining} attempt(s) left.`
+        : `Too many attempts. Try again in ${LOCKOUT_SECONDS / 60} minutes.`,
+    }, 401);
+  }
+
+  await clearAttempts(env, key);
+  const token = await makeToken(env.SIGNING_SECRET, "download", DOWNLOAD_TTL_MS);
+  return json(env, { token, expires: Date.now() + DOWNLOAD_TTL_MS });
+}
+
+async function handleSetDownloadPassword(request, env) {
+  if (!(await requireAdmin(request, env))) {
+    return json(env, { error: "Unauthorized" }, 401);
+  }
+  const { newPassword } = await request.json().catch(() => ({}));
+  if (!newPassword || newPassword.length < 6) {
+    return json(env, { error: "Password must be at least 6 characters" }, 400);
+  }
+  const hash = await sha256Hex(newPassword);
+  await setDownloadPasswordHash(env, hash);
+  return json(env, { ok: true });
+}
+
+async function handleDownloadPasswordStatus(request, env) {
+  if (!(await requireAdmin(request, env))) {
+    return json(env, { error: "Unauthorized" }, 401);
+  }
+  const hash = await getDownloadPasswordHash(env);
+  return json(env, { enabled: Boolean(hash) });
+}
+
 async function handleListGalleryPasswords(request, env) {
   if (!(await requireAdmin(request, env))) {
     return json(env, { error: "Unauthorized" }, 401);
@@ -352,6 +418,16 @@ async function handleFile(request, env, key, url) {
     return new Response("Unauthorized", { status: 401, headers: corsHeaders(env) });
   }
 
+  const wantsDownload = url.searchParams.get("download") === "1";
+  if (wantsDownload) {
+    const dtoken = url.searchParams.get("dtoken");
+    const isAdmin = await verifyToken(env.SIGNING_SECRET, token, "admin");
+    const hasDownloadAccess = isAdmin || (await verifyToken(env.SIGNING_SECRET, dtoken, "download"));
+    if (!hasDownloadAccess) {
+      return json(env, { error: "Download password required" }, 403);
+    }
+  }
+
   const rangeHeader = request.headers.get("Range");
   let r2Options = {};
   let status = 200;
@@ -377,7 +453,7 @@ async function handleFile(request, env, key, url) {
   const object = await env.MEDIA_BUCKET.get(key, r2Options);
   if (!object) return new Response("Not found", { status: 404, headers: corsHeaders(env) });
 
-  if (url.searchParams.get("download") === "1") {
+  if (wantsDownload) {
     const original = (object.customMetadata && object.customMetadata.originalName) || key;
     extraHeaders["Content-Disposition"] = `attachment; filename="${original.replace(/"/g, "")}"`;
   }
@@ -476,6 +552,9 @@ export default {
       if (pathname === "/api/unlock" && request.method === "POST") {
         return await handleUnlock(request, env);
       }
+      if (pathname === "/api/unlock-download" && request.method === "POST") {
+        return await handleUnlockDownload(request, env);
+      }
       if (pathname === "/api/admin/login" && request.method === "POST") {
         return await handleAdminLogin(request, env);
       }
@@ -512,6 +591,12 @@ export default {
       }
       if (pathname === "/api/admin/gallery-passwords/remove" && request.method === "POST") {
         return await handleRemoveGalleryPassword(request, env);
+      }
+      if (pathname === "/api/admin/download-password" && request.method === "POST") {
+        return await handleSetDownloadPassword(request, env);
+      }
+      if (pathname === "/api/admin/download-password-status" && request.method === "GET") {
+        return await handleDownloadPasswordStatus(request, env);
       }
       return json(env, { error: "Not found" }, 404);
     } catch (err) {

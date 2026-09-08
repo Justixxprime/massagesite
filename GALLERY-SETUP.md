@@ -123,3 +123,24 @@ Copy `private-gallery.html` and `admin-upload.html` into your site's root
   For a client-facing portfolio/proofing gallery, this is the right amount of
   friction. If this ever needs to protect something more sensitive, say so
   and we can add per-file expiry or IP binding.
+
+## Download Password (separate from viewing)
+
+Viewing the gallery and downloading from it are now two different
+permissions, controlled by two different passwords:
+
+- The **client password(s)** (Settings → Client Passwords) let someone see
+  the gallery and reveal blurred thumbnails, but that's it.
+- The **download password** (Settings → Download Access) is a second,
+  separate password. Without it, the download button on every photo and
+  video simply won't work, even for someone who already unlocked the
+  gallery itself.
+
+By default, no download password is set, which means downloads are
+completely disabled for clients until you set one. You (as admin) can
+always download from the Library tab regardless, since you're already
+authenticated as admin.
+
+To turn downloads on: go to Settings → Download Access, set a password,
+and share that password only with whoever you actually want to be able to
+save files, separately from the regular gallery password.
