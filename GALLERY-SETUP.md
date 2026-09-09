@@ -124,26 +124,30 @@ Copy `private-gallery.html` and `admin-upload.html` into your site's root
   friction. If this ever needs to protect something more sensitive, say so
   and we can add per-file expiry or IP binding.
 
-## Download Password (separate from viewing)
+## Download Passwords (separate from viewing)
 
-Viewing the gallery and downloading from it are now two different
-permissions, controlled by two different passwords:
+Viewing the gallery and downloading from it are two different permissions,
+controlled by two different password lists:
 
 - The **client password(s)** (Settings → Client Passwords) let someone see
   the gallery and reveal blurred thumbnails, but that's it.
-- The **download password** (Settings → Download Access) is a second,
-  separate password. Without it, the download button on every photo and
-  video simply won't work, even for someone who already unlocked the
-  gallery itself.
+- The **download password(s)** (Settings → Download Access) are a second,
+  separate list. Without one, the download button on every photo and video
+  simply won't work, even for someone who already unlocked the gallery
+  itself.
 
-By default, no download password is set, which means downloads are
-completely disabled for clients until you set one. You (as admin) can
-always download from the Library tab regardless, since you're already
+Both work the same way: add as many as you want, each with its own label,
+any of them grants that permission, and revoking one doesn't affect the
+others.
+
+By default, no download passwords exist, which means downloads are
+completely disabled for clients until you add at least one. You (as admin)
+can always download from the Library tab regardless, since you're already
 authenticated as admin.
 
-To turn downloads on: go to Settings → Download Access, set a password,
-and share that password only with whoever you actually want to be able to
-save files, separately from the regular gallery password.
+To turn downloads on: go to Settings → Download Access, add a password
+with a label so you remember who it's for, and share that specific password
+with whoever should be able to save files.
 
 ## Public Gallery, Managed From the Same Dashboard
 
@@ -168,3 +172,31 @@ A few things worth knowing:
   (the ones that were always there). Anything uploaded through the dashboard
   as "Public" gets added alongside them automatically, it doesn't replace
   them.
+- **Photos and videos land in different sections on purpose.** Public
+  photos join the main photo grid at the top of the page. Public videos go
+  into the "Video Tour" section further down, since that section plays
+  video inline with a click-to-play overlay instead of opening a full-screen
+  viewer, matching the 6 placeholder video slots already built into that
+  section.
+
+### Removing or changing the original seed content
+
+The starter photos and the 6 placeholder videos with fake test footage were
+never pulled from the dashboard, they're written directly into
+`gallery.html`'s HTML. To remove or change one:
+
+1. Open `gallery.html` in your editor.
+2. For a photo, find the line matching its description (search for a
+   distinctive word from its `alt="..."` text, e.g. `alt="Hot stones"`).
+   Delete that whole `<div class="gallery-item ...">...</div>` line to
+   remove it, or just swap the `src="..."` for a real image URL or a path
+   to your own file to replace it.
+3. For a placeholder video, search for its caption text (e.g. `Hot Stone
+   Technique`) to find the right `.video-slot` block, then either delete
+   the surrounding `<div>...</div>` to remove that slot entirely, or swap
+   the `<source src="...">` to point at a real video.
+
+There's no dashboard control for this seed content on purpose, it's meant
+as a one-time starting point you edit directly, while anything uploaded
+through the dashboard afterward is fully manageable from Library without
+touching code at all.

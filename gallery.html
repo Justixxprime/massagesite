@@ -229,7 +229,7 @@
         </div>
       </div>
 
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="video-tour-grid">
         <div>
           <div class="video-slot reveal">
             <video poster="https://images.unsplash.com/photo-1492552181161-62217fc3076d?q=80&w=1200&auto=format&fit=crop" preload="none" playsinline>
@@ -330,7 +330,6 @@
     <button id="lightbox-close" aria-label="Close" class="absolute top-6 right-6 w-11 h-11 rounded-full flex items-center justify-center" style="background:rgba(247,243,234,0.12)"><i class="fa-solid fa-xmark text-xl" style="color:#F7F3EA"></i></button>
     <button id="lightbox-prev" aria-label="Previous image" class="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex items-center justify-center" style="background:rgba(247,243,234,0.12)"><i class="fa-solid fa-chevron-left" style="color:#F7F3EA"></i></button>
     <img id="lightbox-img" src="" alt="">
-    <video id="lightbox-video" style="display:none;" controls playsinline></video>
     <button id="lightbox-next" aria-label="Next image" class="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex items-center justify-center" style="background:rgba(247,243,234,0.12)"><i class="fa-solid fa-chevron-right" style="color:#F7F3EA"></i></button>
   </div>
 
@@ -450,46 +449,77 @@
 
   <!-- =====================================================
        PUBLIC GALLERY — pulls in anything the admin dashboard tagged
-       "Public Gallery" and adds it alongside the photos above.
-       No password needed, this endpoint only ever returns items
-       explicitly marked public.
+       "Public Gallery". No password needed, these endpoints only ever
+       return items explicitly marked public. Photos go into the photo
+       grid above; videos go into the Video Tour section further down,
+       since that section plays inline instead of opening a lightbox.
   ====================================================== -->
   <script>
   (function () {
     const WORKER_URL = "https://amara-vale-gallery.amara-vale-gallery.workers.dev";
-    const grid = document.getElementById("gallery-grid");
+    const photoGrid = document.getElementById("gallery-grid");
+    const videoGrid = document.getElementById("video-tour-grid");
 
     function fileUrl(key) {
       return `${WORKER_URL}/api/public-file/${encodeURIComponent(key)}`;
     }
 
-    function buildItem(item, index) {
+    function buildPhotoItem(item) {
       const wrap = document.createElement("div");
       wrap.className = "gallery-item reveal is-visible";
       wrap.dataset.category = item.category || "studio";
+      const img = document.createElement("img");
+      img.className = "w-full";
+      img.src = fileUrl(item.key);
+      img.loading = "lazy";
+      img.alt = (item.category || "Gallery photo").replace(/-/g, " ");
+      wrap.appendChild(img);
+      return wrap;
+    }
 
-      const url = fileUrl(item.key);
-      let media;
-      if (item.kind === "video") {
-        media = document.createElement("video");
-        media.className = "w-full";
-        media.src = url;
-        media.muted = true;
-        media.playsInline = true;
-        media.preload = "metadata";
-        const badge = document.createElement("span");
-        badge.className = "gi-video-badge";
-        badge.innerHTML = '<i class="fa-solid fa-play"></i> Video';
-        wrap.appendChild(badge);
-      } else {
-        media = document.createElement("img");
-        media.className = "w-full";
-        media.src = url;
-        media.loading = "lazy";
-        media.alt = (item.category || "Gallery photo").replace(/-/g, " ");
-      }
-      media.dataset.kind = item.kind;
-      wrap.appendChild(media);
+    function buildVideoSlot(item) {
+      const wrap = document.createElement("div");
+
+      const slot = document.createElement("div");
+      slot.className = "video-slot reveal is-visible";
+
+      const video = document.createElement("video");
+      video.preload = "none";
+      video.playsInline = true;
+      const source = document.createElement("source");
+      source.src = fileUrl(item.key);
+      source.type = "video/mp4";
+      video.appendChild(source);
+      slot.appendChild(video);
+
+      const overlay = document.createElement("div");
+      overlay.className = "video-play-overlay";
+      const playBtn = document.createElement("div");
+      playBtn.className = "video-play-btn";
+      playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+      overlay.appendChild(playBtn);
+      slot.appendChild(overlay);
+
+      wrap.appendChild(slot);
+
+      const caption = document.createElement("p");
+      caption.className = "eyebrow text-center mt-3";
+      caption.style.color = "var(--ink-soft)";
+      const label = (item.category || "studio").replace(/-/g, " ");
+      caption.innerHTML = `<i class="fa-solid fa-video mr-1" style="color:var(--rose)"></i>${label}`;
+      wrap.appendChild(caption);
+
+      // Same click-to-play behavior as the existing video slots, wired
+      // manually since main.js only bound this to slots present at page load.
+      overlay.addEventListener("click", () => {
+        video.play().then(() => {
+          slot.classList.add("playing");
+          video.setAttribute("controls", "controls");
+        }).catch(() => {});
+      });
+      video.addEventListener("pause", () => slot.classList.remove("playing"));
+      video.addEventListener("ended", () => slot.classList.remove("playing"));
+
       return wrap;
     }
 
@@ -500,73 +530,64 @@
         const data = await res.json();
         if (!data.items || !data.items.length) return;
 
-        data.items.forEach((item, i) => grid.appendChild(buildItem(item, i)));
-        rebindLightbox();
+        data.items.forEach((item) => {
+          if (item.kind === "video") {
+            if (videoGrid) videoGrid.appendChild(buildVideoSlot(item));
+          } else {
+            if (photoGrid) photoGrid.appendChild(buildPhotoItem(item));
+          }
+        });
+
+        rebindPhotoLightbox();
       } catch {
         // Public gallery is additive, if the Worker's unreachable the
-        // page still works fine with just the seed photos already there.
+        // page still works fine with just the seed content already there.
       }
     }
 
-    // Re-implements the lightbox to cover every item (original seed photos
-    // plus anything just added above), and to support video, since the
-    // version in main.js only knows about <img> tags that existed at
-    // page load. Harmless if it double-binds the original seed photos,
-    // both versions just open the same lightbox the same way.
-    function rebindLightbox() {
+    // Re-implements the lightbox to cover every photo (original seed
+    // photos plus any new ones just added above). Harmless if it
+    // double-binds the seed photos, both versions just open the same
+    // lightbox the same way. Photos only, videos live in the Video Tour
+    // section and play inline instead.
+    function rebindPhotoLightbox() {
       const lightbox = document.getElementById("lightbox");
       const lightboxImg = document.getElementById("lightbox-img");
-      const lightboxVideo = document.getElementById("lightbox-video");
       const lightboxClose = document.getElementById("lightbox-close");
       const lightboxPrev = document.getElementById("lightbox-prev");
       const lightboxNext = document.getElementById("lightbox-next");
-      if (!lightbox || !lightboxImg || !lightboxVideo) return;
+      if (!lightbox || !lightboxImg) return;
 
-      const allMedia = () => Array.from(document.querySelectorAll(".gallery-item img, .gallery-item video"));
-      const visibleMedia = () => allMedia().filter((el) => !el.closest(".gallery-item").classList.contains("filtered-out"));
+      const allPhotos = () => Array.from(document.querySelectorAll(".gallery-item img"));
+      const visiblePhotos = () => allPhotos().filter((el) => !el.closest(".gallery-item").classList.contains("filtered-out"));
 
       let currentIndex = 0;
 
-      function render(el) {
-        if (el.tagName === "VIDEO") {
-          lightboxImg.style.display = "none";
-          lightboxVideo.style.display = "block";
-          lightboxVideo.src = el.src;
-          lightboxVideo.currentTime = 0;
-        } else {
-          lightboxVideo.pause();
-          lightboxVideo.style.display = "none";
-          lightboxVideo.removeAttribute("src");
-          lightboxImg.style.display = "block";
-          lightboxImg.src = el.src;
-          lightboxImg.alt = el.alt || "";
-        }
-      }
-
-      function openAt(el) {
-        const list = visibleMedia();
-        currentIndex = list.indexOf(el);
-        render(el);
+      function openAt(img) {
+        const list = visiblePhotos();
+        currentIndex = list.indexOf(img);
+        lightboxImg.src = img.src;
+        lightboxImg.alt = img.alt || "";
         lightbox.classList.add("open");
         document.body.style.overflow = "hidden";
       }
 
       function showIndex(i) {
-        const list = visibleMedia();
+        const list = visiblePhotos();
         if (!list.length) return;
         currentIndex = (i + list.length) % list.length;
-        render(list[currentIndex]);
+        lightboxImg.src = list[currentIndex].src;
+        lightboxImg.alt = list[currentIndex].alt || "";
       }
 
       function closeLightbox() {
         lightbox.classList.remove("open");
-        lightboxVideo.pause();
         document.body.style.overflow = "";
       }
 
-      allMedia().forEach((el) => {
-        el.style.cursor = "zoom-in";
-        el.addEventListener("click", () => openAt(el));
+      allPhotos().forEach((img) => {
+        img.style.cursor = "zoom-in";
+        img.addEventListener("click", () => openAt(img));
       });
 
       if (lightboxClose) lightboxClose.onclick = closeLightbox;

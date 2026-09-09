@@ -152,15 +152,27 @@ async function setAdminPasswordHash(env, hash) {
   await env.RATE_LIMIT.put("password:admin", hash);
 }
 
-// Download password: a single hash, same pattern as admin. Separate from the
-// view password(s), so seeing the gallery and saving files are two different
-// permissions. Defaults to unset (no downloads allowed) until an admin sets one.
-async function getDownloadPasswordHash(env) {
-  return await env.RATE_LIMIT.get("password:download");
+// Download passwords: a LIST, same pattern as gallery/view passwords, so
+// several different passwords can each unlock downloading (e.g. one per
+// client, or one for staff vs one for a photographer). Separate from the
+// view password(s), seeing the gallery and saving files are two different
+// permissions. Defaults to an empty list (no downloads allowed) until an
+// admin adds at least one.
+async function getDownloadPasswordList(env) {
+  const raw = await env.RATE_LIMIT.get("password:download");
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed;
+  } catch {
+    // Old format from before multi-password support: a single raw hash string.
+    return [{ id: "legacy", label: "Original Download Password", hash: raw, createdAt: null }];
+  }
+  return [];
 }
 
-async function setDownloadPasswordHash(env, hash) {
-  await env.RATE_LIMIT.put("password:download", hash);
+async function saveDownloadPasswordList(env, list) {
+  await env.RATE_LIMIT.put("password:download", JSON.stringify(list));
 }
 
 async function getGalleryPasswordList(env) {
@@ -277,16 +289,17 @@ async function handleUnlockDownload(request, env) {
     return json(env, { error: `Too many attempts. Try again in ${Math.ceil(waitSec / 60)} minute(s).` }, 429);
   }
 
-  const correctHash = await getDownloadPasswordHash(env);
-  if (!correctHash) {
+  const list = await getDownloadPasswordList(env);
+  if (!list.length) {
     return json(env, { error: "Downloads haven't been enabled yet. Ask the studio to set a download password." }, 400);
   }
 
   const { password } = await request.json().catch(() => ({}));
   if (!password) return json(env, { error: "Password required" }, 400);
   const hash = await sha256Hex(password);
+  const match = list.find((entry) => entry.hash === hash);
 
-  if (hash !== correctHash) {
+  if (!match) {
     await recordFailure(env, key, state);
     const remaining = Math.max(0, MAX_ATTEMPTS - (state.count + 1));
     return json(env, {
@@ -301,25 +314,46 @@ async function handleUnlockDownload(request, env) {
   return json(env, { token, expires: Date.now() + DOWNLOAD_TTL_MS });
 }
 
-async function handleSetDownloadPassword(request, env) {
+async function handleListDownloadPasswords(request, env) {
   if (!(await requireAdmin(request, env))) {
     return json(env, { error: "Unauthorized" }, 401);
   }
-  const { newPassword } = await request.json().catch(() => ({}));
-  if (!newPassword || newPassword.length < 6) {
-    return json(env, { error: "Password must be at least 6 characters" }, 400);
-  }
-  const hash = await sha256Hex(newPassword);
-  await setDownloadPasswordHash(env, hash);
-  return json(env, { ok: true });
+  const list = await getDownloadPasswordList(env);
+  return json(env, { passwords: list.map(({ id, label, createdAt }) => ({ id, label, createdAt })) });
 }
 
-async function handleDownloadPasswordStatus(request, env) {
+async function handleAddDownloadPassword(request, env) {
   if (!(await requireAdmin(request, env))) {
     return json(env, { error: "Unauthorized" }, 401);
   }
-  const hash = await getDownloadPasswordHash(env);
-  return json(env, { enabled: Boolean(hash) });
+  const { label, password } = await request.json().catch(() => ({}));
+  if (!password || password.length < 6) {
+    return json(env, { error: "Password must be at least 6 characters" }, 400);
+  }
+  const list = await getDownloadPasswordList(env);
+  const hash = await sha256Hex(password);
+  if (list.some((entry) => entry.hash === hash)) {
+    return json(env, { error: "That password already exists" }, 400);
+  }
+  const entry = { id: makeId(), label: (label || "Unnamed").trim().slice(0, 60), hash, createdAt: Date.now() };
+  list.push(entry);
+  await saveDownloadPasswordList(env, list);
+  return json(env, { ok: true, id: entry.id, label: entry.label, createdAt: entry.createdAt });
+}
+
+async function handleRemoveDownloadPassword(request, env) {
+  if (!(await requireAdmin(request, env))) {
+    return json(env, { error: "Unauthorized" }, 401);
+  }
+  const { id } = await request.json().catch(() => ({}));
+  if (!id) return json(env, { error: "id required" }, 400);
+  const list = await getDownloadPasswordList(env);
+  const filtered = list.filter((entry) => entry.id !== id);
+  if (filtered.length === list.length) {
+    return json(env, { error: "Password not found" }, 404);
+  }
+  await saveDownloadPasswordList(env, filtered);
+  return json(env, { ok: true });
 }
 
 async function handleListGalleryPasswords(request, env) {
@@ -636,11 +670,14 @@ export default {
       if (pathname === "/api/admin/gallery-passwords/remove" && request.method === "POST") {
         return await handleRemoveGalleryPassword(request, env);
       }
-      if (pathname === "/api/admin/download-password" && request.method === "POST") {
-        return await handleSetDownloadPassword(request, env);
+      if (pathname === "/api/admin/download-passwords" && request.method === "GET") {
+        return await handleListDownloadPasswords(request, env);
       }
-      if (pathname === "/api/admin/download-password-status" && request.method === "GET") {
-        return await handleDownloadPasswordStatus(request, env);
+      if (pathname === "/api/admin/download-passwords/add" && request.method === "POST") {
+        return await handleAddDownloadPassword(request, env);
+      }
+      if (pathname === "/api/admin/download-passwords/remove" && request.method === "POST") {
+        return await handleRemoveDownloadPassword(request, env);
       }
       return json(env, { error: "Not found" }, 404);
     } catch (err) {

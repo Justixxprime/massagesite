@@ -375,13 +375,8 @@ body.page-leaving { opacity: 0; transition: opacity 0.2s ease; }
 
 /* ---------- Gallery lightbox ---------- */
 .gallery-item { cursor: zoom-in; overflow: hidden; border-radius: 18px; position: relative; }
-.gallery-item img, .gallery-item video { transition: transform 0.7s cubic-bezier(.2,.8,.2,1); }
-.gallery-item:hover img, .gallery-item:hover video { transform: scale(1.08); }
-.gallery-item .gi-video-badge {
-  position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2;
-  background: rgba(20,8,14,0.72); color: #fff; font-size: 0.65rem;
-  padding: 0.25rem 0.55rem; border-radius: 0.35rem;
-}
+.gallery-item img { transition: transform 0.7s cubic-bezier(.2,.8,.2,1); }
+.gallery-item:hover img { transform: scale(1.08); }
 
 #lightbox {
   position: fixed; inset: 0; z-index: 100;
@@ -391,7 +386,7 @@ body.page-leaving { opacity: 0; transition: opacity 0.2s ease; }
   transition: opacity 0.4s ease;
 }
 #lightbox.open { opacity: 1; pointer-events: auto; }
-#lightbox img, #lightbox video { max-height: 85vh; max-width: 90vw; border-radius: 12px; }
+#lightbox img { max-height: 85vh; max-width: 90vw; border-radius: 12px; }
 
 /* ---------- Marquee (services strip) ---------- */
 .marquee-track {
