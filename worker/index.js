@@ -87,7 +87,7 @@ function corsHeaders(env) {
   return {
     "Access-Control-Allow-Origin": env.ALLOWED_ORIGIN || "*",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Filename, X-Category",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Filename, X-Category, X-Visibility",
   };
 }
 
@@ -385,6 +385,7 @@ async function buildMediaItems(env) {
       uploaded: o.uploaded,
       category: (o.customMetadata && o.customMetadata.category) || "general",
       originalName: (o.customMetadata && o.customMetadata.originalName) || o.key,
+      visibility: (o.customMetadata && o.customMetadata.visibility) || "private",
     }))
     .sort((a, b) => new Date(b.uploaded) - new Date(a.uploaded));
 }
@@ -394,7 +395,7 @@ async function handleMediaList(request, env, url) {
   if (!(await verifyToken(env.SIGNING_SECRET, token, "view"))) {
     return json(env, { error: "Unauthorized" }, 401);
   }
-  const items = await buildMediaItems(env);
+  const items = (await buildMediaItems(env)).filter((i) => i.visibility === "private");
   return json(env, { items });
 }
 
@@ -409,25 +410,26 @@ async function handleAdminMediaList(request, env) {
   const photos = items.filter((i) => i.kind === "image").length;
   const videos = items.filter((i) => i.kind === "video").length;
   const categories = [...new Set(items.map((i) => i.category))];
-  return json(env, { items, stats: { total: items.length, photos, videos, totalBytes, categories } });
+  const publicCount = items.filter((i) => i.visibility === "public").length;
+  const privateCount = items.length - publicCount;
+  return json(env, {
+    items,
+    stats: { total: items.length, photos, videos, totalBytes, categories, publicCount, privateCount },
+  });
 }
 
-async function handleFile(request, env, key, url) {
-  const token = url.searchParams.get("token");
-  if (!(await verifyAnyToken(env.SIGNING_SECRET, token, ["view", "admin"]))) {
-    return new Response("Unauthorized", { status: 401, headers: corsHeaders(env) });
-  }
+// Public gallery: no password, no token, anyone can see these. Only ever
+// returns items explicitly tagged visibility:"public" at upload time.
+async function handlePublicMediaList(request, env) {
+  const items = (await buildMediaItems(env)).filter((i) => i.visibility === "public");
+  return json(env, { items });
+}
 
-  const wantsDownload = url.searchParams.get("download") === "1";
-  if (wantsDownload) {
-    const dtoken = url.searchParams.get("dtoken");
-    const isAdmin = await verifyToken(env.SIGNING_SECRET, token, "admin");
-    const hasDownloadAccess = isAdmin || (await verifyToken(env.SIGNING_SECRET, dtoken, "download"));
-    if (!hasDownloadAccess) {
-      return json(env, { error: "Download password required" }, 403);
-    }
-  }
-
+// Shared by handleFile (private, needs a token) and handlePublicFile (open).
+// Does the actual R2 read, Range support for video scrubbing, and optional
+// forced-download headers. Callers are responsible for auth/visibility checks
+// before calling this.
+async function streamObject(env, key, request, { forceDownload } = {}) {
   const rangeHeader = request.headers.get("Range");
   let r2Options = {};
   let status = 200;
@@ -453,7 +455,7 @@ async function handleFile(request, env, key, url) {
   const object = await env.MEDIA_BUCKET.get(key, r2Options);
   if (!object) return new Response("Not found", { status: 404, headers: corsHeaders(env) });
 
-  if (wantsDownload) {
+  if (forceDownload) {
     const original = (object.customMetadata && object.customMetadata.originalName) || key;
     extraHeaders["Content-Disposition"] = `attachment; filename="${original.replace(/"/g, "")}"`;
   }
@@ -470,6 +472,37 @@ async function handleFile(request, env, key, url) {
   });
 }
 
+async function handleFile(request, env, key, url) {
+  const token = url.searchParams.get("token");
+  if (!(await verifyAnyToken(env.SIGNING_SECRET, token, ["view", "admin"]))) {
+    return new Response("Unauthorized", { status: 401, headers: corsHeaders(env) });
+  }
+
+  const wantsDownload = url.searchParams.get("download") === "1";
+  if (wantsDownload) {
+    const dtoken = url.searchParams.get("dtoken");
+    const isAdmin = await verifyToken(env.SIGNING_SECRET, token, "admin");
+    const hasDownloadAccess = isAdmin || (await verifyToken(env.SIGNING_SECRET, dtoken, "download"));
+    if (!hasDownloadAccess) {
+      return json(env, { error: "Download password required" }, 403);
+    }
+  }
+
+  return streamObject(env, key, request, { forceDownload: wantsDownload });
+}
+
+// Public file serving: no token needed at all, but we verify server-side
+// that this exact object is tagged visibility:"public" before serving a
+// single byte. Never trust the URL alone, someone could guess/know a
+// private key and try this route directly.
+async function handlePublicFile(request, env, key) {
+  const head = await env.MEDIA_BUCKET.head(key);
+  if (!head || (head.customMetadata && head.customMetadata.visibility) !== "public") {
+    return new Response("Not found", { status: 404, headers: corsHeaders(env) });
+  }
+  return streamObject(env, key, request, { forceDownload: false });
+}
+
 async function handleAdminUpload(request, env) {
   const auth = request.headers.get("Authorization") || "";
   const token = auth.replace(/^Bearer\s+/i, "");
@@ -479,16 +512,18 @@ async function handleAdminUpload(request, env) {
   const filename = request.headers.get("X-Filename");
   if (!filename) return json(env, { error: "X-Filename header required" }, 400);
   const category = (request.headers.get("X-Category") || "general").toLowerCase().replace(/[^a-z0-9-]/g, "-");
+  const visibilityRaw = (request.headers.get("X-Visibility") || "private").toLowerCase();
+  const visibility = visibilityRaw === "public" ? "public" : "private"; // safe default
 
   const safeName = filename.replace(/[^a-zA-Z0-9._-]/g, "_");
   const key = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${safeName}`;
 
   await env.MEDIA_BUCKET.put(key, request.body, {
     httpMetadata: { contentType: guessContentType(key) },
-    customMetadata: { category, originalName: filename },
+    customMetadata: { category, originalName: filename, visibility },
   });
 
-  return json(env, { ok: true, key, category });
+  return json(env, { ok: true, key, category, visibility });
 }
 
 async function handleAdminDelete(request, env) {
@@ -521,20 +556,22 @@ async function handleAdminUpdateCategory(request, env) {
   if (!(await verifyToken(env.SIGNING_SECRET, token, "admin"))) {
     return json(env, { error: "Unauthorized" }, 401);
   }
-  const { key, category } = await request.json().catch(() => ({}));
+  const { key, category, visibility } = await request.json().catch(() => ({}));
   if (!key || !category) return json(env, { error: "key and category required" }, 400);
   const cleanCategory = category.toLowerCase().replace(/[^a-z0-9-]/g, "-");
 
   const object = await env.MEDIA_BUCKET.get(key);
   if (!object) return json(env, { error: "File not found" }, 404);
   const originalName = (object.customMetadata && object.customMetadata.originalName) || key;
+  const existingVisibility = (object.customMetadata && object.customMetadata.visibility) || "private";
+  const cleanVisibility = visibility === "public" || visibility === "private" ? visibility : existingVisibility;
 
   await env.MEDIA_BUCKET.put(key, object.body, {
     httpMetadata: { contentType: guessContentType(key) },
-    customMetadata: { category: cleanCategory, originalName },
+    customMetadata: { category: cleanCategory, originalName, visibility: cleanVisibility },
   });
 
-  return json(env, { ok: true, category: cleanCategory });
+  return json(env, { ok: true, category: cleanCategory, visibility: cleanVisibility });
 }
 
 // ---------- router ----------
@@ -561,12 +598,19 @@ export default {
       if (pathname === "/api/media" && request.method === "GET") {
         return await handleMediaList(request, env, url);
       }
+      if (pathname === "/api/public-media" && request.method === "GET") {
+        return await handlePublicMediaList(request, env);
+      }
       if (pathname === "/api/admin/media" && request.method === "GET") {
         return await handleAdminMediaList(request, env);
       }
       if (pathname.startsWith("/api/file/") && request.method === "GET") {
         const key = decodeURIComponent(pathname.replace("/api/file/", ""));
         return await handleFile(request, env, key, url);
+      }
+      if (pathname.startsWith("/api/public-file/") && request.method === "GET") {
+        const key = decodeURIComponent(pathname.replace("/api/public-file/", ""));
+        return await handlePublicFile(request, env, key);
       }
       if (pathname === "/api/admin/upload" && request.method === "POST") {
         return await handleAdminUpload(request, env);

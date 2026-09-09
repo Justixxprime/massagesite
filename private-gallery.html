@@ -14,11 +14,15 @@
 <link rel="stylesheet" href="css/style.css">
 <style>
   /* This page has no scroll-based hero, so the nav must stay solid at all times
-     (main.js only adds the ".scrolled" look after scrollY > 40) */
+     (main.js only adds the ".scrolled" look after scrollY > 40).
+     NOTE: deliberately NOT using backdrop-filter here. On Safari/iOS,
+     backdrop-filter on an ancestor can incorrectly turn it into a
+     "containing block" for position:fixed children, which breaks the
+     mobile menu (nested inside this header) by trapping it inside the
+     header's own small box instead of the full screen. The background
+     alone is already 92% opaque, plenty readable without the blur. */
   #site-nav {
     background: rgba(247, 243, 234, 0.92) !important;
-    -webkit-backdrop-filter: blur(14px) !important;
-    backdrop-filter: blur(14px) !important;
     box-shadow: 0 8px 30px -12px rgba(50,8,28,0.15) !important;
   }
   [data-theme="dark"] #site-nav { background: rgba(40,6,20,0.92) !important; }

@@ -144,3 +144,27 @@ authenticated as admin.
 To turn downloads on: go to Settings → Download Access, set a password,
 and share that password only with whoever you actually want to be able to
 save files, separately from the regular gallery password.
+
+## Public Gallery, Managed From the Same Dashboard
+
+The admin dashboard's Upload tab now has a "Add this batch to" toggle:
+**Private Gallery** or **Public Gallery**. Private works exactly as before,
+password-protected, only in `private-gallery.html`. Public means the file
+shows up immediately on the real `gallery.html` page, visible to every
+visitor, no password involved.
+
+A few things worth knowing:
+
+- Public and private uploads use separate category sets, since they're
+  really two different galleries with two different purposes. Public
+  matches `gallery.html`'s existing categories (Studio, Treatment, Details,
+  Ambiance); Private keeps its own (General, Studio, Treatment, Behind the
+  Scenes).
+- In the Library tab, every file shows a Public or Private badge, and there's
+  a dedicated button to flip a file between the two after the fact, no need
+  to delete and re-upload.
+- New uploads default to Private. Nothing becomes public by accident.
+- `gallery.html` still has its original seed photos hardcoded in the page
+  (the ones that were always there). Anything uploaded through the dashboard
+  as "Public" gets added alongside them automatically, it doesn't replace
+  them.

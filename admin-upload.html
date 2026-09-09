@@ -13,10 +13,10 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="css/style.css">
 <style>
+  /* No backdrop-filter on #site-nav here on purpose, see the matching
+     comment in private-gallery.html, it breaks the mobile menu on Safari. */
   #site-nav {
     background: rgba(247, 243, 234, 0.92) !important;
-    -webkit-backdrop-filter: blur(14px) !important;
-    backdrop-filter: blur(14px) !important;
     box-shadow: 0 8px 30px -12px rgba(50,8,28,0.15) !important;
   }
   [data-theme="dark"] #site-nav { background: rgba(40,6,20,0.92) !important; }
@@ -356,6 +356,16 @@
             <div class="stat-value" id="statCategories">–</div>
             <div class="stat-label">Categories</div>
           </div>
+          <div class="stat-card">
+            <i class="fa-solid fa-globe"></i>
+            <div class="stat-value" id="statPublic">–</div>
+            <div class="stat-label">Public</div>
+          </div>
+          <div class="stat-card">
+            <i class="fa-solid fa-lock"></i>
+            <div class="stat-value" id="statPrivate">–</div>
+            <div class="stat-label">Private</div>
+          </div>
         </div>
 
         <div class="admin-card">
@@ -391,6 +401,21 @@
           </p>
 
           <div style="margin-top:1.25rem;">
+            <p class="eyebrow" style="color:var(--rose);margin-bottom:0.6rem;">Add this batch to</p>
+            <div id="visibilityChips" style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+              <button type="button" class="filter-btn vis-chip active px-4 py-2 rounded-full text-xs" data-vis="private">
+                <i class="fa-solid fa-lock text-xs mr-1"></i> Private Gallery
+              </button>
+              <button type="button" class="filter-btn vis-chip px-4 py-2 rounded-full text-xs" data-vis="public">
+                <i class="fa-solid fa-globe text-xs mr-1"></i> Public Gallery
+              </button>
+            </div>
+            <p id="visibilityHint" style="font-size:0.78rem;color:var(--ink-soft);margin-top:0.5rem;">
+              Only visible in the password-protected private gallery.
+            </p>
+          </div>
+
+          <div style="margin-top:1.25rem;">
             <p class="eyebrow" style="color:var(--rose);margin-bottom:0.6rem;">Category for this batch</p>
             <div id="categoryChips" style="display:flex;flex-wrap:wrap;gap:0.5rem;">
               <button type="button" class="filter-btn cat-chip active px-4 py-2 rounded-full text-xs" data-cat="general">General</button>
@@ -422,6 +447,11 @@
 
           <div class="lib-toolbar">
             <input type="text" id="librarySearch" class="lib-search" placeholder="Search by filename…">
+            <select id="libraryVisibilityFilter" class="lib-cat-filter">
+              <option value="all">Public + Private</option>
+              <option value="public">Public only</option>
+              <option value="private">Private only</option>
+            </select>
             <select id="libraryCategoryFilter" class="lib-cat-filter">
               <option value="all">All categories</option>
             </select>
@@ -757,7 +787,52 @@
     });
     document.getElementById("viewInLibraryBtn").addEventListener("click", () => switchToTab("library"));
 
-    // ---------- Upload (category chips) ----------
+    // ---------- Upload (visibility + category chips) ----------
+    let activeVisibility = "private";
+
+    const CATEGORY_SETS = {
+      private: [
+        { cat: "general", label: "General" },
+        { cat: "studio", label: "Studio" },
+        { cat: "treatment", label: "Treatment" },
+        { cat: "behind-the-scenes", label: "Behind the Scenes" },
+      ],
+      public: [
+        { cat: "studio", label: "Studio" },
+        { cat: "treatment", label: "Treatment" },
+        { cat: "details", label: "Details" },
+        { cat: "ambiance", label: "Ambiance" },
+      ],
+    };
+
+    function renderCategoryChips(visibility) {
+      const chipsEl = document.getElementById("categoryChips");
+      chipsEl.innerHTML = "";
+      CATEGORY_SETS[visibility].forEach((c, i) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "filter-btn cat-chip px-4 py-2 rounded-full text-xs" + (i === 0 ? " active" : "");
+        btn.dataset.cat = c.cat;
+        btn.textContent = c.label;
+        chipsEl.appendChild(btn);
+      });
+      activeCategory = CATEGORY_SETS[visibility][0].cat;
+      document.getElementById("customCategory").value = "";
+    }
+    renderCategoryChips("private");
+
+    document.getElementById("visibilityChips").addEventListener("click", (e) => {
+      const btn = e.target.closest(".vis-chip");
+      if (!btn) return;
+      document.querySelectorAll(".vis-chip").forEach((c) => c.classList.remove("active"));
+      btn.classList.add("active");
+      activeVisibility = btn.dataset.vis;
+      renderCategoryChips(activeVisibility);
+      document.getElementById("visibilityHint").textContent = activeVisibility === "public"
+        ? "Visible to every visitor on gallery.html, no password needed."
+        : "Only visible in the password-protected private gallery.";
+    });
+
     document.getElementById("categoryChips").addEventListener("click", (e) => {
       const btn = e.target.closest(".cat-chip");
       if (!btn) return;
@@ -850,6 +925,7 @@
         xhr.setRequestHeader("Authorization", `Bearer ${adminToken}`);
         xhr.setRequestHeader("X-Filename", file.name);
         xhr.setRequestHeader("X-Category", activeCategory || "general");
+        xhr.setRequestHeader("X-Visibility", activeVisibility || "private");
         xhr.upload.onprogress = (e) => {
           if (e.lengthComputable) fill.style.width = `${Math.round((e.loaded / e.total) * 100)}%`;
         };
@@ -931,6 +1007,8 @@
       document.getElementById("statPhotos").textContent = stats.photos;
       document.getElementById("statVideos").textContent = stats.videos;
       document.getElementById("statCategories").textContent = stats.categories.length;
+      document.getElementById("statPublic").textContent = stats.publicCount;
+      document.getElementById("statPrivate").textContent = stats.privateCount;
 
       const freeTierBytes = 10 * 1024 * 1024 * 1024; // 10GB R2 free tier
       const pct = Math.min(100, (stats.totalBytes / freeTierBytes) * 100);
@@ -983,19 +1061,22 @@
     const libraryEmpty = document.getElementById("libraryEmpty");
 
     document.getElementById("librarySearch").addEventListener("input", renderLibrary);
+    document.getElementById("libraryVisibilityFilter").addEventListener("change", renderLibrary);
     document.getElementById("libraryCategoryFilter").addEventListener("change", renderLibrary);
     document.getElementById("librarySort").addEventListener("change", renderLibrary);
     document.getElementById("refreshLibraryBtn").addEventListener("click", () => { toast("Refreshing…"); loadLibrary(); });
 
     function getFilteredSortedItems() {
       const search = document.getElementById("librarySearch").value.toLowerCase();
+      const vis = document.getElementById("libraryVisibilityFilter").value;
       const cat = document.getElementById("libraryCategoryFilter").value;
       const sort = document.getElementById("librarySort").value;
 
       let items = libraryItems.filter((i) => {
         const matchesSearch = !search || i.originalName.toLowerCase().includes(search);
+        const matchesVis = vis === "all" || i.visibility === vis;
         const matchesCat = cat === "all" || i.category === cat;
-        return matchesSearch && matchesCat;
+        return matchesSearch && matchesVis && matchesCat;
       });
 
       items = [...items];
@@ -1059,22 +1140,31 @@
       top.appendChild(checkbox);
       top.appendChild(kindBadge);
 
+      const visBadge = document.createElement("span");
+      visBadge.className = "lib-tile-kind";
+      visBadge.style.background = item.visibility === "public" ? "rgba(47,122,69,0.75)" : "rgba(20,8,14,0.6)";
+      visBadge.innerHTML = item.visibility === "public"
+        ? '<i class="fa-solid fa-globe"></i> Public'
+        : '<i class="fa-solid fa-lock"></i> Private';
+      top.appendChild(visBadge);
+
       const bottom = document.createElement("div");
       bottom.className = "lib-tile-bottom";
       const name = document.createElement("div");
       name.className = "lib-tile-name";
       name.textContent = item.originalName;
 
+      const catOptions = CATEGORY_SETS[item.visibility] || CATEGORY_SETS.private;
       const catSelect = document.createElement("select");
       catSelect.className = "lib-cat-select";
-      ["general", "studio", "treatment", "behind-the-scenes"].forEach((c) => {
+      catOptions.forEach(({ cat: c, label }) => {
         const opt = document.createElement("option");
         opt.value = c;
-        opt.textContent = c.replace(/-/g, " ").replace(/\b\w/g, (ch) => ch.toUpperCase());
+        opt.textContent = label;
         if (c === item.category) opt.selected = true;
         catSelect.appendChild(opt);
       });
-      if (!["general", "studio", "treatment", "behind-the-scenes"].includes(item.category)) {
+      if (!catOptions.some((c) => c.cat === item.category)) {
         const opt = document.createElement("option");
         opt.value = item.category;
         opt.textContent = item.category;
@@ -1086,6 +1176,26 @@
 
       const actions = document.createElement("div");
       actions.className = "lib-tile-actions";
+      const visToggleBtn = document.createElement("button");
+      visToggleBtn.className = "lib-mini-btn";
+      visToggleBtn.type = "button";
+      visToggleBtn.title = item.visibility === "public" ? "Make private" : "Make public";
+      visToggleBtn.innerHTML = item.visibility === "public"
+        ? '<i class="fa-solid fa-lock"></i>'
+        : '<i class="fa-solid fa-globe"></i>';
+      visToggleBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        const newVis = item.visibility === "public" ? "private" : "public";
+        const newCatSet = CATEGORY_SETS[newVis];
+        const newCategory = newCatSet.some((c) => c.cat === item.category) ? item.category : newCatSet[0].cat;
+        const ok = await confirmDialog(
+          newVis === "public" ? "Make this public?" : "Make this private?",
+          newVis === "public"
+            ? `"${item.originalName}" will become visible to every visitor on gallery.html, no password needed.`
+            : `"${item.originalName}" will move back behind the private gallery's password.`
+        );
+        if (ok) updateCategory(item.key, newCategory, newVis);
+      });
       const dlBtn = document.createElement("a");
       dlBtn.className = "lib-mini-btn";
       dlBtn.href = fileUrl(item.key, true);
@@ -1101,6 +1211,7 @@
         if (ok) deleteFiles([item.key]);
       });
       actions.appendChild(catSelect);
+      actions.appendChild(visToggleBtn);
       actions.appendChild(dlBtn);
       actions.appendChild(delBtn);
 
@@ -1168,16 +1279,18 @@
       }
     }
 
-    async function updateCategory(key, category) {
+    async function updateCategory(key, category, visibility) {
       try {
+        const body = { key, category };
+        if (visibility) body.visibility = visibility;
         const res = await fetch(`${WORKER_URL}/api/admin/update-category`, {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${adminToken}` },
-          body: JSON.stringify({ key, category }),
+          body: JSON.stringify(body),
         });
         const data = await res.json();
-        if (!res.ok) { toast(data.error || "Couldn't update category", "error"); return; }
-        toast("Category updated");
+        if (!res.ok) { toast(data.error || "Couldn't update", "error"); return; }
+        toast(visibility ? `Moved to ${data.visibility === "public" ? "Public" : "Private"} Gallery` : "Category updated");
         loadLibrary();
       } catch {
         toast("Couldn't reach the server", "error");
