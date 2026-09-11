@@ -406,7 +406,7 @@ folder listing exactly which filename goes where.
 
 **Where they are:**
 - Homepage, "See It In Motion" section → `videos/session-preview.mp4`
-- Gallery page, main tour + 6 labeled clips → `videos/studio-tour.mp4`, and `videos/session-clip-1.mp4` through `session-clip-6.mp4` (Hot Stone Technique, Deep Tissue Work, Studio Walk-In, Setting Up the Room, Prenatal Positioning, Post-Session Aftercare)
+- Gallery page, main tour + 6 labeled clips → `videos/studio-tour.mp4`, and `videos/session-clip-1.mp4` through `session-clip-6.mp4` (Hot Stone Technique, Deep Tissue Work, Studio Walk-In, Setting Up the Room, Riding The Wave Positioning, Post-Session Aftercare)
 - About page, right after the story → `videos/meet-amara.mp4`
 - Testimonials page, 2 video testimonial slots → `videos/testimonial-1.mp4`, `videos/testimonial-2.mp4`
 - Corporate page → `videos/corporate-session.mp4`

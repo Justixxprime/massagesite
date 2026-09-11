@@ -8,7 +8,7 @@ GALLERY PAGE (7 slots)
   session-clip-2.mp4    -> "Deep Tissue Work"
   session-clip-3.mp4    -> "Studio Walk-In"
   session-clip-4.mp4    -> "Setting Up the Room"
-  session-clip-5.mp4    -> "Prenatal Positioning"
+  session-clip-5.mp4    -> "Riding The Wave Positioning"
   session-clip-6.mp4    -> "Post-Session Aftercare"
 
 OTHER PAGES
