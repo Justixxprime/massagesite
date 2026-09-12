@@ -1,5 +1,5 @@
 /**
- * Amara Vale — Private Gallery Worker
+ * Emily Lucky — Private Gallery Worker
  * -----------------------------------
  * Fronts an R2 bucket. Nothing in the bucket is ever public.
  * A viewer must POST the correct password to get a short-lived token,
@@ -19,7 +19,7 @@
  *   ADMIN_PASSWORD_HASH     sha256 hex of your admin/upload password
  *   SIGNING_SECRET          any long random string, used to sign tokens
  * Optional var (wrangler.toml [vars]):
- *   ALLOWED_ORIGIN           e.g. "https://www.amaravale.com" (defaults to "*")
+ *   ALLOWED_ORIGIN           e.g. "https://www.emilylucky.com" (defaults to "*")
  * Required KV binding:
  *   RATE_LIMIT               used to lock out an IP after repeated wrong passwords
  */

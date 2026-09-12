@@ -1,4 +1,4 @@
-# Amara Vale — How This Site Works (Baby Steps)
+# Emily Lucky — How This Site Works (Baby Steps)
 
 Welcome. This guide assumes you know HTML, Tailwind, and JS but haven't built
 a site quite this animated before. We go slow, on purpose.
@@ -8,7 +8,7 @@ a site quite this animated before. We go slow, on purpose.
 ## 1. The folder, explained
 
 ```
-amara-vale/
+emily-lucky/
 ├── index.html          ← Home
 ├── about.html
 ├── services.html
@@ -39,10 +39,10 @@ works locally exactly like it will once uploaded.
 
 ## 2. Step 1: Changing the business name
 
-Right now everything says "Amara Vale." To rename:
+Right now everything says "Emily Lucky." To rename:
 
 1. Open every `.html` file.
-2. Press `Ctrl+F` (or `Cmd+F` on Mac) in your code editor, search `Amara Vale`,
+2. Press `Ctrl+F` (or `Cmd+F` on Mac) in your code editor, search `Emily Lucky`,
    replace all with the real name.
 3. Also search just `Amara` alone — it appears in body copy (e.g. "I'm Amara").
 4. Update `<title>` tags too — each page has its own, near the top.
@@ -211,7 +211,7 @@ Astro) or a simple templating setup — but not necessary yet.
 - Click through the gallery lightbox, open the FAQ accordion, let the
   testimonial carousel auto-advance once.
 - Replace every placeholder phone number, email, and address before this
-  goes live — search for `(555) 019-2044`, `hello@amaravale.com`, and
+  goes live — search for `(202) 202-4033`, `hello@emilylucky.com`, and
   `#LMT-000000` across all files.
 
 ---
@@ -257,12 +257,12 @@ There's a floating WhatsApp button on every page (bottom-right, green
 circle) plus a link in the footer and a full card on the Booking/Contact
 page. All of them point to:
 ```
-https://wa.me/15550192044
+https://wa.me/19715708951
 ```
-**To make this real:** replace `15550192044` with her actual WhatsApp
+**To make this real:** replace `19715708951` with her actual WhatsApp
 number in **full international format, no dashes or plus sign** — e.g. a
 US number (555) 123-4567 becomes `15551234567`. Search-and-replace
-`15550192044` across all files.
+`19715708951` across all files.
 
 ### 12c. Web3Forms — the booking form now actually sends
 The booking form on `booking.html` now POSTs to Web3Forms, a free
@@ -353,7 +353,7 @@ months, not something that ships in a single build.
 1. Claim/create a Google Business Profile with the exact same name, phone,
    and hours as the site.
 2. Update `sitemap.xml` and every `canonical`/`og:url` tag with the real
-   domain once she buys one (currently placeholder `amaravale.com`).
+   domain once she buys one (currently placeholder `emilylucky.com`).
 3. Ask happy clients to leave a Google review after their session.
 4. Submit the sitemap in Google Search Console once the site is live.
 

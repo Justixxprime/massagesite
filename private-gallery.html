@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Private Gallery | Amara Vale</title>
+<title>VIP Gallery | Emily Lucky Private Companionship</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="icons/favicon.ico" sizes="any">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
@@ -13,14 +13,6 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="css/style.css">
 <style>
-  /* This page has no scroll-based hero, so the nav must stay solid at all times
-     (main.js only adds the ".scrolled" look after scrollY > 40).
-     NOTE: deliberately NOT using backdrop-filter here. On Safari/iOS,
-     backdrop-filter on an ancestor can incorrectly turn it into a
-     "containing block" for position:fixed children, which breaks the
-     mobile menu (nested inside this header) by trapping it inside the
-     header's own small box instead of the full screen. The background
-     alone is already 92% opaque, plenty readable without the blur. */
   #site-nav {
     background: rgba(247, 243, 234, 0.92) !important;
     box-shadow: 0 8px 30px -12px rgba(50,8,28,0.15) !important;
@@ -28,12 +20,8 @@
   [data-theme="dark"] #site-nav { background: rgba(40,6,20,0.92) !important; }
   #utility-bar { max-height: 0 !important; opacity: 0 !important; }
 
-  /* This page has several z-indexed decorative layers (grain, orbs,
-     lightbox at z-index 200+). Force the mobile menu above all of them,
-     no matter what, so it can never render underneath page decoration. */
   .mobile-menu-overlay { z-index: 9999 !important; }
 
-  /* ---------- Page-specific: lock screen + gallery grid ---------- */
   input[type="password"] {
     border: 1.5px solid var(--cream-line);
     border-radius: 0.75rem;
@@ -85,14 +73,12 @@
   .lock-error { color: #b0233a; font-size: 0.85rem; margin-top: 0.75rem; min-height: 1.2em; }
   .lock-hint { font-size: 0.78rem; color: var(--ink-soft); margin-top: 1.5rem; letter-spacing: 0.03em; }
 
-  /* Curtain-style unlock transition, built on the site's existing mask-reveal pattern */
   #lock-section.unlocking { animation: curtain-fade 0.9s ease forwards; }
   @keyframes curtain-fade {
     0% { opacity: 1; }
     100% { opacity: 0; visibility: hidden; }
   }
 
-  /* Falling petals (pure CSS, no library) */
   .petal {
     position: absolute; top: -5%; z-index: 2; pointer-events: none;
     width: 14px; height: 14px; border-radius: 50% 0 50% 0;
@@ -106,8 +92,6 @@
     100% { transform: translateY(105vh) translateX(40px) rotate(300deg); opacity: 0; }
   }
 
-  /* Gallery grid — uniform cards, YouTube-style: fixed shape, cropped thumbnails,
-     a title row underneath. Works cleanly whether there's 1 item or 100. */
   #gallery-section { display: none; padding: 7.5rem 0 5rem; }
   .g-filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; margin-bottom: 2.5rem; }
   .g-grid {
@@ -157,7 +141,6 @@
   .g-tile.revealed:hover .g-download { opacity: 1; }
   .g-download:hover { background: var(--forest); }
 
-  /* Title row under each thumbnail, like a video platform's card caption */
   .g-meta { padding: 0.65rem 0.15rem 0; display: flex; align-items: flex-start; gap: 0.5rem; }
   .g-meta-icon {
     flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%;
@@ -181,7 +164,6 @@
     animation: spin-slow 0.9s linear infinite;
   }
 
-  /* Lightbox */
   #lightbox {
     position: fixed; inset: 0; z-index: 200; background: rgba(20,8,14,0.94);
     display: none; align-items: center; justify-content: center; padding: 1.5rem;
@@ -226,7 +208,6 @@
     #lightbox-download { top: auto; bottom: 3.5rem; right: 50%; transform: translateX(50%); }
   }
 
-  /* ---------- Download password modal ---------- */
   #downloadModal {
     position: fixed; inset: 0; z-index: 300; background: rgba(20,8,14,0.7);
     display: none; align-items: center; justify-content: center; padding: 1.5rem;
@@ -264,8 +245,8 @@
 <header id="site-nav" class="fixed top-0 left-0 right-0 z-50 scrolled">
     <div id="utility-bar" class="hidden sm:block">
       <div class="max-w-7xl mx-auto px-6 lg:px-10 py-2 flex items-center justify-between">
-        <p><i class="fa-regular fa-clock mr-1"></i> Open Every Day · 8am – 8pm · By Appointment</p>
-        <p><i class="fa-solid fa-shield-heart mr-1"></i> Discreet Licensed & Professional LMT · (555) 019-2044</p>
+        <p><i class="fa-regular fa-clock mr-1"></i> Available Every Day · 8am – Late · By Appointment Only</p>
+        <p><i class="fa-solid fa-shield-heart mr-1"></i> Discreet & Verified · (202) 202-4033</p>
       </div>
     </div>
     <div class="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between py-5">
@@ -273,30 +254,30 @@
         <span class="w-9 h-9 rounded-full flex items-center justify-center logo-mark" style="border:1.5px solid var(--rose)">
           <span class="w-2 h-2 rounded-full logo-dot" style="background:var(--rose)"></span>
         </span>
-        <span class="font-display text-2xl tracking-tight" style="color:var(--forest)">Amara Vale</span>
+        <span class="font-display text-2xl tracking-tight" style="color:var(--forest)">Emily Lucky</span>
       </a>
       <nav class="hidden xl:flex items-center gap-4 eyebrow" style="color:var(--ink)">
         <a href="index.html" class="nav-link"><i class="fa-solid fa-house"></i>Home</a>
-        <a href="about.html" class="nav-link"><i class="fa-solid fa-user"></i>About</a>
-        <a href="services.html" class="nav-link"><i class="fa-solid fa-spa"></i>Services</a>
-        <a href="packages.html" class="nav-link"><i class="fa-solid fa-gift"></i>Packages</a>
+        <a href="about.html" class="nav-link"><i class="fa-solid fa-user"></i>About Me</a>
+        <a href="services.html" class="nav-link"><i class="fa-solid fa-spa"></i>Experiences</a>
+        <a href="packages.html" class="nav-link"><i class="fa-solid fa-gift"></i>Extended Dates</a>
         <a href="gallery.html" class="nav-link"><i class="fa-solid fa-camera"></i>Gallery</a>
         <a href="testimonials.html" class="nav-link"><i class="fa-solid fa-quote-left"></i>Reviews</a>
-        <a href="blog.html" class="nav-link"><i class="fa-solid fa-feather"></i>Journal</a>
+        <a href="blog.html" class="nav-link"><i class="fa-solid fa-feather"></i>Diary</a>
 
         <div class="more-dropdown" id="more-dropdown">
           <button type="button" class="more-trigger nav-link flex items-center" id="more-trigger" aria-haspopup="true" aria-expanded="false">
             <i class="fa-solid fa-ellipsis"></i>More<i class="fa-solid fa-chevron-down"></i>
           </button>
           <div class="more-panel" role="menu">
-            <a href="certifications.html" class="nav-link"><i class="fa-solid fa-award"></i>Credentials</a>
+            <a href="certifications.html" class="nav-link"><i class="fa-solid fa-award"></i>Verification</a>
             <a href="faq.html" class="nav-link"><i class="fa-solid fa-circle-question"></i>FAQ</a>
-            <a href="giftcards.html" class="nav-link"><i class="fa-solid fa-gift"></i>Gift Cards</a>
+            <a href="giftcards.html" class="nav-link"><i class="fa-solid fa-gift"></i>Tribute Gifts</a>
             <a href="policies.html" class="nav-link"><i class="fa-solid fa-file-shield"></i>Policies</a>
-            <a href="private-gallery.html" class="nav-link"><i class="fa-solid fa-lock"></i>Private Gallery</a>
+            <a href="private-gallery.html" class="nav-link"><i class="fa-solid fa-lock"></i>VIP Gallery</a>
             <div class="more-divider"></div>
-            <a href="corporate.html" class="nav-link"><i class="fa-solid fa-building"></i>Pleasure Sessions<span class="more-badge">New</span></a>
-            <a href="referrals.html" class="nav-link"><i class="fa-solid fa-user-plus"></i>Referral Program<span class="more-badge">New</span></a>
+            <a href="corporate.html" class="nav-link"><i class="fa-solid fa-building"></i>Group Pleasure<span class="more-badge">New</span></a>
+            <a href="referrals.html" class="nav-link"><i class="fa-solid fa-user-plus"></i>Referral Rewards<span class="more-badge">New</span></a>
             <a href="location.html" class="nav-link"><i class="fa-solid fa-location-dot"></i>Location & Access<span class="more-badge">New</span></a>
           </div>
         </div>
@@ -306,7 +287,7 @@
           <i id="theme-icon" class="fa-solid fa-circle-half-stroke" style="color:var(--forest)"></i>
           <span class="theme-toggle-label" id="theme-toggle-label">System</span>
         </button>
-        <a href="booking.html#booking-form" class="btn-cta"><i class="fa-solid fa-calendar-check"></i><span>Book a Session</span></a>
+        <a href="booking.html#booking-form" class="btn-cta"><i class="fa-solid fa-calendar-check"></i><span>Book Our Date</span></a>
       </div>
       <div class="xl:hidden flex items-center gap-2">
         <button id="theme-toggle-mobile" aria-label="Toggle theme" class="w-11 h-11 rounded-full flex items-center justify-center" style="border:1.5px solid var(--cream-line)">
@@ -326,7 +307,7 @@
             <span class="w-9 h-9 rounded-full flex items-center justify-center logo-mark" style="border:1.5px solid var(--rose)">
               <span class="w-2 h-2 rounded-full logo-dot" style="background:var(--rose)"></span>
             </span>
-            <span class="font-display text-xl" style="color:var(--forest)">Amara Vale</span>
+            <span class="font-display text-xl" style="color:var(--forest)">Emily Lucky</span>
           </a>
           <button id="mobile-menu-close" aria-label="Close menu" class="mobile-menu-close-btn">
             <i class="fa-solid fa-xmark"></i>
@@ -335,39 +316,37 @@
 
         <nav class="mobile-menu-links eyebrow">
           <a href="index.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-house"></i></span>Home</a>
-          <a href="about.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-user"></i></span>About</a>
-          <a href="services.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-spa"></i></span>Services</a>
-          <a href="packages.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-gift"></i></span>Packages</a>
+          <a href="about.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-user"></i></span>About Me</a>
+          <a href="services.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-spa"></i></span>Experiences</a>
+          <a href="packages.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-gift"></i></span>Extended Dates</a>
           <a href="gallery.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-camera"></i></span>Gallery</a>
           <a href="testimonials.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-quote-left"></i></span>Reviews</a>
-          <a href="certifications.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-award"></i></span>Credentials</a>
-          <a href="giftcards.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-gift"></i></span>Gift Cards</a>
+          <a href="certifications.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-award"></i></span>Verification</a>
+          <a href="giftcards.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-gift"></i></span>Tribute Gifts</a>
           <a href="faq.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-circle-question"></i></span>FAQ</a>
-          <a href="blog.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-feather"></i></span>Journal</a>
+          <a href="blog.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-feather"></i></span>Diary</a>
           <a href="policies.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-file-shield"></i></span>Policies</a>
-          <a href="private-gallery.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-lock"></i></span>Private Gallery</a>
+          <a href="private-gallery.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-lock"></i></span>VIP Gallery</a>
 
           <div class="mobile-menu-divider"><span>More</span></div>
 
-          <a href="corporate.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-building"></i></span>Pleasure Sessions</a>
-          <a href="referrals.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-user-plus"></i></span>Referral Program</a>
-          <a href="location.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-location-dot"></i></span>Location &amp; Parking</a>
+          <a href="corporate.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-building"></i></span>Group Pleasure</a>
+          <a href="referrals.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-user-plus"></i></span>Referral Rewards</a>
+          <a href="location.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-location-dot"></i></span>Location &amp; Access</a>
         </nav>
 
         <div class="mobile-menu-footer">
-          <a href="booking.html#booking-form" class="btn-cta justify-center w-full"><i class="fa-solid fa-calendar-check"></i><span>Book a Session</span></a>
+          <a href="booking.html#booking-form" class="btn-cta justify-center w-full"><i class="fa-solid fa-calendar-check"></i><span>Book Our Date</span></a>
           <div class="flex justify-center gap-4 mt-5">
-            <a href="https://wa.me/15550192044" target="_blank" rel="noopener" aria-label="WhatsApp" class="mobile-social-icon" style="background:linear-gradient(145deg,#31E17E,#1CAA53)"><i class="fa-brands fa-whatsapp"></i></a>
-            <a href="https://signal.me/#p/+15550192044" target="_blank" rel="noopener" aria-label="Signal" class="mobile-social-icon" style="background:linear-gradient(145deg,#4C86FF,#2A5FD9)"><i class="fa-solid fa-comment-dots"></i></a>
-            <a href="tel:+15550192044" aria-label="Call" class="mobile-social-icon" style="background:linear-gradient(145deg,#5C1030,#7A1D42)"><i class="fa-solid fa-phone"></i></a>
+            <a href="https://wa.me/19715708951" target="_blank" rel="noopener" aria-label="WhatsApp" class="mobile-social-icon" style="background:linear-gradient(145deg,#31E17E,#1CAA53)"><i class="fa-brands fa-whatsapp"></i></a>
+            <a href="https://signal.me/#p/+13022370772" target="_blank" rel="noopener" aria-label="Signal" class="mobile-social-icon" style="background:linear-gradient(145deg,#4C86FF,#2A5FD9)"><i class="fa-solid fa-comment-dots"></i></a>
+            <a href="tel:+19715708951" aria-label="Call" class="mobile-social-icon" style="background:linear-gradient(145deg,#5C1030,#7A1D42)"><i class="fa-solid fa-phone"></i></a>
           </div>
         </div>
       </div>
     </div>
   </header>
-  <!-- =====================================================
-       LOCK SCREEN — cinematic, romantic, sealed until unlocked
-  ====================================================== -->
+
   <section id="lock-section">
     <div class="absolute inset-0 kenburns">
       <img src="https://images.unsplash.com/photo-1519823551278-64ac92734fb1?q=80&w=2000&auto=format&fit=crop" alt="" class="w-full h-full object-cover">
@@ -386,7 +365,7 @@
         <p class="eyebrow" style="color:var(--rose)">A Private Collection</p>
         <h1 class="font-display font-semibold text-3xl mt-2 mb-3" style="color:var(--forest)">Just for You</h1>
         <p class="text-sm leading-relaxed" style="color:var(--ink-soft)">
-          Unlock your daily invites to Emily’s very own sweet, romantic, fun, hot, naughty, slut, sex videos, nude collection,masturbation. Only paid members see the daily videos and pictures made to tease your senses and leave you begging for more.
+          Unlock your daily invites to Emily's very own sweet, romantic, fun, hot, naughty, slutty, sex videos, nude collection, masturbation. Only paid members see the daily videos and pictures made to tease your senses and leave you begging for more.
         </p>
 
         <form id="unlockForm" class="mt-7" autocomplete="off">
@@ -402,9 +381,6 @@
     </div>
   </section>
 
-  <!-- =====================================================
-       GALLERY — revealed after unlock
-  ====================================================== -->
   <section id="gallery-section">
     <div class="max-w-7xl mx-auto px-6 lg:px-10">
       <div class="text-center mb-12 reveal is-visible" style="position:relative;">
@@ -417,8 +393,8 @@
           </button>
         </div>
         <p class="eyebrow" style="color:var(--rose)"><i class="fa-solid fa-heart"></i> Just For You</p>
-        <h1 class="font-display font-semibold text-4xl mt-3" style="color:var(--forest)">Your Private Gallery</h1>
-        <p class="mt-3 max-w-xl mx-auto" style="color:var(--ink-soft)">Tap any tile to bring it into focus, tap again to open it full-screen.</p>
+        <h1 class="font-display font-semibold text-4xl mt-3" style="color:var(--forest)">Your VIP Gallery</h1>
+        <p class="mt-3 max-w-xl mx-auto" style="color:var(--ink-soft)">Tap any tile to bring it into focus, tap again to open it full screen.</p>
       </div>
 
       <div id="gallery-loading">
@@ -434,7 +410,6 @@
     </div>
   </section>
 
-  <!-- Lightbox -->
   <div id="lightbox">
     <button id="lightbox-close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
     <button id="lightbox-download" type="button"><i class="fa-solid fa-download"></i><span>Save</span></button>
@@ -444,7 +419,6 @@
     <div id="lightbox-counter"></div>
   </div>
 
-  <!-- Download password modal -->
   <div id="downloadModal">
     <div class="download-modal-card">
       <div class="download-modal-seal"><i class="fa-solid fa-lock"></i></div>
@@ -469,14 +443,14 @@
             <span class="w-9 h-9 rounded-full flex items-center justify-center" style="border:1.5px solid var(--rose)">
               <span class="w-2 h-2 rounded-full" style="background:var(--rose)"></span>
             </span>
-            <span class="font-display text-2xl">Amara Vale</span>
+            <span class="font-display text-2xl">Emily Lucky</span>
           </a>
-          <p class="text-sm max-w-xs" style="color:#9FAA9F">Therapeutic Massage & Wellness. Licensed, insured, and privately practiced to make your body sing. One therapist, one room, my hands sliding all over you slow and sensual, fast and wild. Let me give you a massage that will leave your body aching for more.</p>
+          <p class="text-sm max-w-xs" style="color:#9FAA9F">Private companionship & sensual bodywork. Verified, discreet, and selectively available for discerning gentlemen who appreciate quality. One woman, private sanctuary, my hands sliding all over you slow and sensual or fast and wild. Let me show you pleasures that will leave your body aching for more.</p>
           <div class="flex gap-3 mt-6">
-            <a href="https://wa.me/15550192044" target="_blank" rel="noopener" aria-label="WhatsApp" class="w-10 h-10 rounded-full flex items-center justify-center transition hover:scale-110" style="background:#25D366">
+            <a href="https://wa.me/19715708951" target="_blank" rel="noopener" aria-label="WhatsApp" class="w-10 h-10 rounded-full flex items-center justify-center transition hover:scale-110" style="background:#25D366">
               <i class="fa-brands fa-whatsapp text-lg" style="color:#fff"></i>
             </a>
-            <a href="https://signal.me/#p/+15550192044" target="_blank" rel="noopener" aria-label="Signal" class="w-10 h-10 rounded-full flex items-center justify-center transition hover:scale-110" style="background:#3A76F0">
+            <a href="https://signal.me/#p/+13022370772" target="_blank" rel="noopener" aria-label="Signal" class="w-10 h-10 rounded-full flex items-center justify-center transition hover:scale-110" style="background:#3A76F0">
               <i class="fa-solid fa-comment-dots text-lg" style="color:#fff"></i>
             </a>
             <a href="#" target="_blank" rel="noopener" aria-label="TikTok" class="w-10 h-10 rounded-full flex items-center justify-center transition hover:scale-110" style="border:1px solid rgba(247,243,234,0.25)">
@@ -485,8 +459,8 @@
             <a href="#" aria-label="Instagram" class="w-10 h-10 rounded-full flex items-center justify-center transition hover:scale-110" style="border:1px solid rgba(247,243,234,0.25)">
               <i class="fa-brands fa-instagram" style="color:#F7F3EA"></i>
             </a>
-            <a href="#" aria-label="Google" class="w-10 h-10 rounded-full flex items-center justify-center transition hover:scale-110" style="border:1px solid rgba(247,243,234,0.25)">
-              <i class="fa-brands fa-google" style="color:#F7F3EA"></i>
+            <a href="#" aria-label="Twitter" class="w-10 h-10 rounded-full flex items-center justify-center transition hover:scale-110" style="border:1px solid rgba(247,243,234,0.25)">
+              <i class="fa-brands fa-twitter" style="color:#F7F3EA"></i>
             </a>
           </div>
         </div>
@@ -494,65 +468,57 @@
         <div>
           <p class="eyebrow" style="color:var(--rose-light)">Explore</p>
           <ul class="mt-4 space-y-2 text-sm" style="color:#C9CFC5">
-            <li><a href="about.html" class="footer-link">About</a></li>
-            <li><a href="services.html" class="footer-link">Services &amp; Pricing</a></li>
-            <li><a href="packages.html" class="footer-link">Packages</a></li>
+            <li><a href="about.html" class="footer-link">About Me</a></li>
+            <li><a href="services.html" class="footer-link">Experiences & Rates</a></li>
+            <li><a href="packages.html" class="footer-link">Extended Dates</a></li>
             <li><a href="gallery.html" class="footer-link">Gallery</a></li>
-            <li><a href="blog.html" class="footer-link">Journal</a></li>
-            <li><a href="testimonials.html" class="footer-link">Testimonials</a></li>
+            <li><a href="blog.html" class="footer-link">Diary</a></li>
+            <li><a href="testimonials.html" class="footer-link">Reviews</a></li>
           </ul>
         </div>
 
         <div>
-          <p class="eyebrow" style="color:var(--rose-light)">Studio</p>
+          <p class="eyebrow" style="color:var(--rose-light)">Private</p>
           <ul class="mt-4 space-y-2 text-sm" style="color:#C9CFC5">
-            <li><a href="certifications.html" class="footer-link">Credentials</a></li>
-            <li><a href="giftcards.html" class="footer-link">Gift Cards</a></li>
+            <li><a href="certifications.html" class="footer-link">Verification</a></li>
+            <li><a href="giftcards.html" class="footer-link">Tribute Gifts</a></li>
             <li><a href="faq.html" class="footer-link">FAQ</a></li>
             <li><a href="policies.html" class="footer-link">Policies</a></li>
-            <li><a href="private-gallery.html" class="footer-link inline-flex items-center gap-2"><i class="fa-solid fa-lock text-xs"></i> Private Gallery</a></li>
-            <li><a href="booking.html" class="footer-link">Book a Session</a></li>
+            <li><a href="private-gallery.html" class="footer-link inline-flex items-center gap-2"><i class="fa-solid fa-lock text-xs"></i> VIP Gallery</a></li>
+            <li><a href="booking.html" class="footer-link">Book Our Date</a></li>
           </ul>
         </div>
 
         <div class="col-span-2 md:col-span-1">
           <p class="eyebrow" style="color:var(--rose-light)">Contact</p>
           <ul class="mt-4 space-y-3 text-sm" style="color:#C9CFC5">
-            <li><a href="mailto:hello@amaravale.com" class="hover:text-white break-all"><i class="fa-regular fa-envelope mr-1"></i> hello@amaravale.com</a></li>
-            <li><a href="tel:+15550192044" class="hover:text-white"><i class="fa-solid fa-phone mr-1"></i> (555) 019-2044</a></li>
-            <li><a href="https://wa.me/15550192044" target="_blank" rel="noopener" class="inline-flex items-center gap-2 hover:text-white"><i class="fa-brands fa-whatsapp" style="color:#25D366"></i> WhatsApp</a></li>
-            <li><a href="https://signal.me/#p/+15550192044" target="_blank" rel="noopener" class="inline-flex items-center gap-2 hover:text-white"><i class="fa-solid fa-comment-dots" style="color:#3A76F0"></i> Signal</a></li>
+            <li><a href="mailto:hello@emilylucky.com" class="hover:text-white break-all"><i class="fa-regular fa-envelope mr-1"></i> hello@emilylucky.com</a></li>
+            <li><a href="tel:+19715708951" class="hover:text-white"><i class="fa-solid fa-phone mr-1"></i> (202) 202-4033</a></li>
+            <li><a href="https://wa.me/19715708951" target="_blank" rel="noopener" class="inline-flex items-center gap-2 hover:text-white"><i class="fa-brands fa-whatsapp" style="color:#25D366"></i> WhatsApp</a></li>
+            <li><a href="https://signal.me/#p/+13022370772" target="_blank" rel="noopener" class="inline-flex items-center gap-2 hover:text-white"><i class="fa-solid fa-comment-dots" style="color:#3A76F0"></i> Signal</a></li>
             <li>By appointment · Every day</li>
           </ul>
         </div>
       </div>
 
       <div class="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between gap-3 text-xs" style="color:#8B9689">
-        <p>© 2026 Amara Vale Massage Therapy. All rights reserved.</p>
-        <p>License #LMT-000000, placeholder, replace with real license number</p>
+        <p>© 2026 Emily Lucky Private Companionship. All rights reserved.</p>
+        <p>Screening required for all new friends</p>
       </div>
     </div>
   </footer>
 
-  <!-- Floating contact buttons: WhatsApp + Signal -->
   <div class="fixed bottom-6 left-6 z-40 flex flex-col gap-4" id="contact-fab-group">
-    <a href="https://signal.me/#p/+15550192044" target="_blank" rel="noopener" aria-label="Message on Signal" class="contact-fab" style="background:linear-gradient(145deg,#4C86FF,#2A5FD9)">
+    <a href="https://signal.me/#p/+13022370772" target="_blank" rel="noopener" aria-label="Message on Signal" class="contact-fab" style="background:linear-gradient(145deg,#4C86FF,#2A5FD9)">
       <i class="fa-solid fa-comment-dots"></i>
       <span class="contact-fab-label">Chat on Signal</span>
     </a>
-    <a href="https://wa.me/15550192044" target="_blank" rel="noopener" aria-label="Message on WhatsApp" class="contact-fab" style="background:linear-gradient(145deg,#31E17E,#1CAA53)">
+    <a href="https://wa.me/19715708951" target="_blank" rel="noopener" aria-label="Message on WhatsApp" class="contact-fab" style="background:linear-gradient(145deg,#31E17E,#1CAA53)">
       <i class="fa-brands fa-whatsapp"></i>
       <span class="contact-fab-label">Chat on WhatsApp</span>
     </a>
   </div>
 
-  <!-- =====================================================
-       TAWK.TO LIVE CHAT — real live chat, free forever, no caps.
-       Setup (2 minutes): create a free account at tawk.to, then go to
-       Administration > Channels > Chat Widget to get your Property ID
-       and Widget ID. Replace the two placeholders below with your real
-       values. Full walkthrough in TEACHING-GUIDE.md.
-  ====================================================== -->
   <script type="text/javascript">
   var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
   (function(){
@@ -565,16 +531,12 @@
   })();
   </script>
 
-  <!-- Back to top -->
   <button id="back-to-top" aria-label="Back to top">
     <i class="fa-solid fa-arrow-up" style="color:#F7F3EA"></i>
   </button>
 
   <script src="js/main.js"></script>
-  <!-- =====================================================
-       PRIVATE GALLERY LOGIC
-       Configure WORKER_URL below after deploying the Worker (see SETUP.md)
-  ====================================================== -->
+
   <script>
   (function () {
     const WORKER_URL = "https://amara-vale-gallery.amara-vale-gallery.workers.dev";
@@ -607,11 +569,10 @@
     const downloadModalSubmit = document.getElementById("downloadModalSubmit");
     const downloadModalCancel = document.getElementById("downloadModalCancel");
 
-    let currentItems = [];   // [{item, url}] in the order rendered
+    let currentItems = [];
     let currentIndex = -1;
-    let pendingDownload = null; // { url, filename } waiting on the password modal
+    let pendingDownload = null;
 
-    // ---------- Falling petals, pure CSS + JS, no library ----------
     function spawnPetals() {
       const field = document.getElementById("petal-field");
       const colors = ["var(--rose-light)", "var(--rose)", "var(--gold)"];
@@ -628,7 +589,6 @@
     }
     spawnPetals();
 
-    // ---------- Token storage ----------
     function getStoredToken() {
       try {
         const raw = sessionStorage.getItem(TOKEN_KEY);
@@ -642,7 +602,6 @@
       sessionStorage.setItem(TOKEN_KEY, JSON.stringify({ token, expires }));
     }
 
-    // ---------- Download token storage (separate password, separate token) ----------
     function getStoredDownloadToken() {
       try {
         const raw = sessionStorage.getItem(DOWNLOAD_TOKEN_KEY);
@@ -665,9 +624,6 @@
       a.remove();
     }
 
-    // Called by every download button. If we already unlocked downloads this
-    // session, go straight through. Otherwise, ask for the download password
-    // first and remember what was being downloaded so it can resume after.
     function requestDownload(baseUrl) {
       const dtoken = getStoredDownloadToken();
       if (dtoken) {
@@ -726,7 +682,6 @@
       }
     });
 
-    // ---------- Unlock flow ----------
     unlockForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       await attemptUnlock(passwordInput.value);
@@ -745,7 +700,7 @@
         const data = await res.json();
         if (!res.ok) {
           lockCard.classList.remove("shake");
-          void lockCard.offsetWidth; // restart animation
+          void lockCard.offsetWidth;
           lockCard.classList.add("shake");
           if (res.status === 429) {
             lockError.textContent = data.error || "Too many attempts. Please wait and try again.";
@@ -805,15 +760,12 @@
       }).finally(() => btn.classList.remove("spinning"));
     });
 
-    // If you switch away to upload something in another tab, then come back
-    // to this one, quietly refresh so new files show up without a manual reload.
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible" && currentToken) {
         loadGallery(currentToken);
       }
     });
 
-    // ---------- Load + render gallery ----------
     async function loadGallery(token) {
       currentToken = token;
       grid.innerHTML = "";
@@ -848,7 +800,7 @@
 
     function buildFilters(items) {
       const categories = [...new Set(items.map((i) => i.category || "general"))];
-      if (categories.length <= 1) return; // nothing to filter
+      if (categories.length <= 1) return;
       galleryFilters.style.display = "flex";
       galleryFilters.innerHTML = "";
 
@@ -906,7 +858,6 @@
       badge.innerHTML = item.kind === "video" ? '<i class="fa-solid fa-play"></i> Video' : '<i class="fa-solid fa-image"></i> Photo';
       tile.appendChild(badge);
 
-      // YouTube-style duration badge, filled in once the video reveals its length
       if (item.kind === "video") {
         const duration = document.createElement("div");
         duration.className = "g-duration";
@@ -943,7 +894,6 @@
 
       card.appendChild(tile);
 
-      // Title row underneath, like a video platform card caption
       const meta = document.createElement("div");
       meta.className = "g-meta";
       const catLabel = (item.category || "general").replace(/-/g, " ");
@@ -1015,7 +965,6 @@
       currentIndex = -1;
     }
 
-    // Swipe support for touch devices
     let touchStartX = null;
     lightbox.addEventListener("touchstart", (e) => { touchStartX = e.touches[0].clientX; });
     lightbox.addEventListener("touchend", (e) => {
@@ -1025,7 +974,6 @@
       touchStartX = null;
     });
 
-    // ---------- Auto-resume valid session ----------
     (function init() {
       const token = getStoredToken();
       if (token) unlockAndReveal(token);

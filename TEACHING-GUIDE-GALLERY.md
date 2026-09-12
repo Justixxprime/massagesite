@@ -9,7 +9,7 @@ the password-protected gallery. We go slow, on purpose.
 ## 1. The three pieces, in plain English
 
 ```
-amara-vale/
+Emily-vale/
 ├── private-gallery.html   ← what your client sees (locked, then unlocked)
 ├── admin-upload.html      ← what YOU see, to add new photos/videos
 └── worker/

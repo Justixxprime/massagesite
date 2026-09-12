@@ -4,7 +4,7 @@ compatibility_date = "2026-01-01"
 
 # Optional: restrict CORS to your real domain once deployed.
 # [vars]
-# ALLOWED_ORIGIN = "https://www.amaravale.com"
+# ALLOWED_ORIGIN = "https://www.emilylucky.com"
 
 [[r2_buckets]]
 binding = "MEDIA_BUCKET"

@@ -12,7 +12,7 @@ GALLERY PAGE (7 slots)
   session-clip-6.mp4    -> "Post-Session Aftercare"
 
 OTHER PAGES
-  meet-amara.mp4        -> About page, intro video
+  meet-Emily.mp4        -> About page, intro video
   session-preview.mp4   -> Homepage, "See It In Motion" section
   testimonial-1.mp4     -> Testimonials page, video testimonial 1
   testimonial-2.mp4     -> Testimonials page, video testimonial 2
