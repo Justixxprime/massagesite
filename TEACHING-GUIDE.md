@@ -328,8 +328,8 @@ persists across pages and repeat visits.
   arrows and keyboard navigation.
 
 ### 12h. New pages
-- **Packages & Memberships** (`packages.html`) — single session, monthly
-  membership, and 5-session prepay tiers.
+- **Packages & Extended dates** (`packages.html`) — single session, monthly
+  dates, and 5-session prepay tiers.
 - **Second Journal article** (`blog-post-2.html`) — duplicate this pattern
   for future posts, same as `blog-post.html`.
 
