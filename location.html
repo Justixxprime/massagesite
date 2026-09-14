@@ -25,71 +25,70 @@
   <meta property="og:image" content="https://www.emilyLorky.com/icons/icon.svg">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="css/style.css">
+  </script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/style.css">
 </head>
-
 <body class="bg-[var(--alabaster)]">
+
+  <!-- =====================================================
+       NAV
+  ====================================================== -->
   <div id="scroll-progress"></div>
 
   <header id="site-nav" class="fixed top-0 left-0 right-0 z-50">
     <div id="utility-bar" class="hidden sm:block">
       <div class="max-w-7xl mx-auto px-6 lg:px-10 py-2 flex items-center justify-between">
-        <p><i class="fa-regular fa-clock mr-1"></i> Available Daily · By Appointment Only</p>
-        <p><i class="fa-solid fa-shield-heart mr-1"></i> Discreet & Exclusive · (202) 202-4033</p>
+        <p><i class="fa-regular fa-clock mr-1"></i> Available Every Day · 8am – Late · By Appointment</p>
+        <p><i class="fa-solid fa-shield-heart mr-1"></i> Discreet & Verified · (202) 202-4033</p>
       </div>
     </div>
     <div class="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between py-5">
       <a href="index.html" class="flex items-center gap-3">
-        <span class="w-9 h-9 rounded-full flex items-center justify-center logo-mark"
-          style="border:1.5px solid var(--rose)">
+        <span class="w-9 h-9 rounded-full flex items-center justify-center logo-mark" style="border:1.5px solid var(--rose)">
           <span class="w-2 h-2 rounded-full logo-dot" style="background:var(--rose)"></span>
         </span>
         <span class="font-display text-2xl tracking-tight" style="color:var(--forest)">Emily Lorky</span>
       </a>
       <nav class="hidden xl:flex items-center gap-4 eyebrow" style="color:var(--ink)">
         <a href="index.html" class="nav-link"><i class="fa-solid fa-house"></i>Home</a>
-        <a href="index.html" class="nav-link"><i class="fa-solid fa-house"></i>Home</a>
         <a href="about.html" class="nav-link"><i class="fa-solid fa-user"></i>About Me</a>
         <a href="services.html" class="nav-link"><i class="fa-solid fa-spa"></i>Experiences</a>
-        <a href="packages.html" class="nav-link"><i class="fa-solid fa-champagne-glasses"></i>Extended Dates</a>
+        <a href="packages.html" class="nav-link"><i class="fa-solid fa-gift"></i>Extended Dates</a>
         <a href="gallery.html" class="nav-link"><i class="fa-solid fa-camera"></i>Gallery</a>
         <a href="testimonials.html" class="nav-link"><i class="fa-solid fa-quote-left"></i>Reviews</a>
-        <a href="certifications.html" class="nav-link"><i class="fa-solid fa-id-card"></i>Verification</a>
-        <a href="giftcards.html" class="nav-link"><i class="fa-solid fa-gift"></i>Tribute Gifts</a>
-        <a href="faq.html" class="nav-link"><i class="fa-solid fa-circle-question"></i>FAQ</a>
         <a href="blog.html" class="nav-link"><i class="fa-solid fa-feather"></i>Diary</a>
-        <a href="policies.html" class="nav-link"><i class="fa-solid fa-file-shield"></i>Policies</a>
-        <a href="private-gallery.html" class="nav-link"><i class="fa-solid fa-lock"></i>VIP Gallery</a>
 
         <div class="more-dropdown" id="more-dropdown">
-          <button type="button" class="more-trigger nav-link flex items-center" id="more-trigger" aria-haspopup="true"
-            aria-expanded="false">
+          <button type="button" class="more-trigger nav-link flex items-center" id="more-trigger" aria-haspopup="true" aria-expanded="false">
             <i class="fa-solid fa-ellipsis"></i>More<i class="fa-solid fa-chevron-down"></i>
           </button>
           <div class="more-panel" role="menu">
-            <a href="corporate.html" class="nav-link"><i class="fa-solid fa-users"></i>Group Pleasure</a>
-            <a href="referrals.html" class="nav-link"><i class="fa-solid fa-user-plus"></i>Referral Rewards</a>
-            <a href="location.html" class="nav-link"><i class="fa-solid fa-location-dot"></i>Location & Access</a>
+            <a href="certifications.html" class="nav-link"><i class="fa-solid fa-award"></i>Verification</a>
+            <a href="faq.html" class="nav-link"><i class="fa-solid fa-circle-question"></i>FAQ</a>
+            <a href="giftcards.html" class="nav-link"><i class="fa-solid fa-gift"></i>Tribute Gifts</a>
+            <a href="policies.html" class="nav-link"><i class="fa-solid fa-file-shield"></i>Policies</a>
+            <a href="private-gallery.html" class="nav-link"><i class="fa-solid fa-lock"></i>VIP Gallery</a>
+            <div class="more-divider"></div>
+            <a href="corporate.html" class="nav-link"><i class="fa-solid fa-building"></i>Group Pleasure<span class="more-badge">New</span></a>
+            <a href="referrals.html" class="nav-link"><i class="fa-solid fa-user-plus"></i>Referral Rewards<span class="more-badge">New</span></a>
+            <a href="location.html" class="nav-link"><i class="fa-solid fa-location-dot"></i>Location & Access<span class="more-badge">New</span></a>
           </div>
         </div>
       </nav>
       <div class="hidden xl:flex items-center gap-3">
-        <button id="theme-toggle" aria-label="Toggle theme"
-          class="theme-toggle-btn w-10 h-10 rounded-full flex items-center justify-center"
-          style="border:1.5px solid var(--cream-line)">
+        <button id="theme-toggle" aria-label="Toggle theme" class="theme-toggle-btn w-10 h-10 rounded-full flex items-center justify-center" style="border:1.5px solid var(--cream-line)">
           <i id="theme-icon" class="fa-solid fa-circle-half-stroke" style="color:var(--forest)"></i>
           <span class="theme-toggle-label" id="theme-toggle-label">System</span>
         </button>
         <a href="booking.html#booking-form" class="btn-cta"><i class="fa-solid fa-calendar-check"></i><span>Book Our Date</span></a>
       </div>
       <div class="xl:hidden flex items-center gap-2">
-        <button id="theme-toggle-mobile" aria-label="Toggle theme"
-          class="w-11 h-11 rounded-full flex items-center justify-center" style="border:1.5px solid var(--cream-line)">
+        <button id="theme-toggle-mobile" aria-label="Toggle theme" class="w-11 h-11 rounded-full flex items-center justify-center" style="border:1.5px solid var(--cream-line)">
           <i class="fa-solid fa-circle-half-stroke theme-icon-mobile" style="color:var(--forest)"></i>
         </button>
-        <button id="menu-btn" aria-label="Toggle menu"
-          class="w-11 h-11 flex flex-col justify-center items-center gap-1.5">
+        <button id="menu-btn" aria-label="Toggle menu" class="w-11 h-11 flex flex-col justify-center items-center gap-1.5">
           <span class="block w-6 h-[1.5px]" style="background:var(--ink)"></span>
           <span class="block w-6 h-[1.5px]" style="background:var(--ink)"></span>
         </button>
@@ -100,8 +99,7 @@
       <div class="mobile-menu-panel">
         <div class="mobile-menu-header">
           <a href="index.html" class="flex items-center gap-3">
-            <span class="w-9 h-9 rounded-full flex items-center justify-center logo-mark"
-              style="border:1.5px solid var(--rose)">
+            <span class="w-9 h-9 rounded-full flex items-center justify-center logo-mark" style="border:1.5px solid var(--rose)">
               <span class="w-2 h-2 rounded-full logo-dot" style="background:var(--rose)"></span>
             </span>
             <span class="font-display text-xl" style="color:var(--forest)">Emily Lorky</span>
@@ -112,53 +110,32 @@
         </div>
 
         <nav class="mobile-menu-links eyebrow">
-          <a href="index.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i
-                class="fa-solid fa-house"></i></span>Home</a>
-          <a href="about.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i
-                class="fa-solid fa-user"></i></span>About Me</a>
-          <a href="services.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i
-                class="fa-solid fa-spa"></i></span>Experiences</a>
-          <a href="extended-dates.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i
-                class="fa-solid fa-champagne-glasses"></i></span>Extended Dates</a>
-          <a href="gallery.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i
-                class="fa-solid fa-camera"></i></span>Gallery</a>
-          <a href="testimonials.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i
-                class="fa-solid fa-quote-left"></i></span>Reviews</a>
-          <a href="verification.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i
-                class="fa-solid fa-id-card"></i></span>Verification</a>
-          <a href="tribute.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i
-                class="fa-solid fa-gift"></i></span>Tribute Gifts</a>
-          <a href="faq.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i
-                class="fa-solid fa-circle-question"></i></span>FAQ</a>
-          <a href="blog.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i
-                class="fa-solid fa-feather"></i></span>Diary</a>
-          <a href="policies.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i
-                class="fa-solid fa-file-shield"></i></span>Policies</a>
-          <a href="private-gallery.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i
-                class="fa-solid fa-lock"></i></span>VIP Gallery</a>
+          <a href="index.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-house"></i></span>Home</a>
+          <a href="about.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-user"></i></span>About Me</a>
+          <a href="services.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-spa"></i></span>Experiences</a>
+          <a href="packages.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-gift"></i></span>Extended Dates</a>
+          <a href="gallery.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-camera"></i></span>Gallery</a>
+          <a href="testimonials.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-quote-left"></i></span>Reviews</a>
+          <a href="certifications.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-award"></i></span>Verification</a>
+          <a href="giftcards.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-gift"></i></span>Tribute Gifts</a>
+          <a href="faq.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-circle-question"></i></span>FAQ</a>
+          <a href="blog.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-feather"></i></span>Diary</a>
+          <a href="policies.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-file-shield"></i></span>Policies</a>
+          <a href="private-gallery.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-lock"></i></span>VIP Gallery</a>
 
           <div class="mobile-menu-divider"><span>More</span></div>
 
-          <a href="corporate.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i
-                class="fa-solid fa-users"></i></span>Group Pleasure</a>
-          <a href="referrals.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i
-                class="fa-solid fa-user-plus"></i></span>Referral Rewards</a>
-          <a href="location.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i
-                class="fa-solid fa-location-dot"></i></span>Location &amp; Access</a>
+          <a href="corporate.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-building"></i></span>Group Pleasure</a>
+          <a href="referrals.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-user-plus"></i></span>Referral Rewards</a>
+          <a href="location.html" class="nav-link mobile-link"><span class="mobile-link-icon"><i class="fa-solid fa-location-dot"></i></span>Location &amp; Access</a>
         </nav>
 
         <div class="mobile-menu-footer">
-          <a href="booking.html#booking-form" class="btn-cta justify-center w-full"><i
-              class="fa-solid fa-calendar-check"></i><span>Book Our Date</span></a>
+          <a href="booking.html#booking-form" class="btn-cta justify-center w-full"><i class="fa-solid fa-calendar-check"></i><span>Book Our Date</span></a>
           <div class="flex justify-center gap-4 mt-5">
-            <a href="https://wa.me/19715708951" target="_blank" rel="noopener" aria-label="WhatsApp"
-              class="mobile-social-icon" style="background:linear-gradient(145deg,#31E17E,#1CAA53)"><i
-                class="fa-brands fa-whatsapp"></i></a>
-            <a href="https://signal.me/#p/+13022370772" target="_blank" rel="noopener" aria-label="Signal"
-              class="mobile-social-icon" style="background:linear-gradient(145deg,#4C86FF,#2A5FD9)"><i
-                class="fa-solid fa-comment-dots"></i></a>
-            <a href="tel:+19715708951" aria-label="Call" class="mobile-social-icon"
-              style="background:linear-gradient(145deg,#5C1030,#7A1D42)"><i class="fa-solid fa-phone"></i></a>
+            <a href="https://wa.me/19715708951" target="_blank" rel="noopener" aria-label="WhatsApp" class="mobile-social-icon" style="background:linear-gradient(145deg,#31E17E,#1CAA53)"><i class="fa-brands fa-whatsapp"></i></a>
+            <a href="https://signal.me/#p/+13022370772" target="_blank" rel="noopener" aria-label="Signal" class="mobile-social-icon" style="background:linear-gradient(145deg,#4C86FF,#2A5FD9)"><i class="fa-solid fa-comment-dots"></i></a>
+            <a href="tel:+19715708951" aria-label="Call" class="mobile-social-icon" style="background:linear-gradient(145deg,#5C1030,#7A1D42)"><i class="fa-solid fa-phone"></i></a>
           </div>
         </div>
       </div>
@@ -167,7 +144,7 @@
 
   <section class="relative min-h-[640px] flex items-center justify-center overflow-hidden py-44">
     <div class="absolute inset-0 kenburns">
-      <img src="https://images.unsplash.com/photo-1745327883508-b6cd32e5dde5?q=80&w=2000&auto=format&fit=crop"
+      <img src="images/location.jpg"
         alt="Private residence" class="w-full h-full object-cover">
     </div>
     <div class="cinematic-overlay"></div>
@@ -249,18 +226,18 @@
 
       <div class="grid grid-cols-3 gap-4 mt-12">
         <div class="aspect-square rounded-2xl overflow-hidden reveal"><img
-            src="https://images.unsplash.com/photo-1611255550543-b5ecb01dfddc?q=80&w=600&auto=format&fit=crop"
+            src="images/location1.jpg"
             alt="Private residence exterior" class="w-full h-full object-cover"></div>
         <div class="aspect-square rounded-2xl overflow-hidden reveal reveal-delay-1"><img
-            src="https://images.unsplash.com/photo-1611073615830-9f76902c10fe?q=80&w=600&auto=format&fit=crop"
+            src="images/location2.jpg"
             alt="Private entrance" class="w-full h-full object-cover"></div>
         <div class="aspect-square rounded-2xl overflow-hidden reveal reveal-delay-2"><img
-            src="https://images.unsplash.com/photo-1696841212541-449ca29397cc?q=80&w=600&auto=format&fit=crop"
+            src="images/location3.jpg"
             alt="Upscale neighborhood" class="w-full h-full object-cover"></div>
       </div>
 
       <div class="mt-12 rounded-3xl overflow-hidden aspect-[16/6] relative" style="background:#5C1030">
-        <img src="https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?q=80&w=1600&auto=format&fit=crop"
+        <img src="images/pleasure.jpg"
           alt="Private location" class="w-full h-full object-cover opacity-40">
         <div class="absolute inset-0 flex items-center justify-center">
           <p class="eyebrow text-[#F7F3EA] px-6 py-3 rounded-full text-center" style="background:rgba(70,10,35,0.7)"><i
