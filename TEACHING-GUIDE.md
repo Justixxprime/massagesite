@@ -1,4 +1,4 @@
-# Emily Lucky — How This Site Works (Baby Steps)
+# Emily Lorky — How This Site Works (Baby Steps)
 
 Welcome. This guide assumes you know HTML, Tailwind, and JS but haven't built
 a site quite this animated before. We go slow, on purpose.
@@ -8,7 +8,7 @@ a site quite this animated before. We go slow, on purpose.
 ## 1. The folder, explained
 
 ```
-emily-lucky/
+emily-Lorky/
 ├── index.html          ← Home
 ├── about.html
 ├── services.html
@@ -39,10 +39,10 @@ works locally exactly like it will once uploaded.
 
 ## 2. Step 1: Changing the business name
 
-Right now everything says "Emily Lucky." To rename:
+Right now everything says "Emily Lorky." To rename:
 
 1. Open every `.html` file.
-2. Press `Ctrl+F` (or `Cmd+F` on Mac) in your code editor, search `Emily Lucky`,
+2. Press `Ctrl+F` (or `Cmd+F` on Mac) in your code editor, search `Emily Lorky`,
    replace all with the real name.
 3. Also search just `Amara` alone — it appears in body copy (e.g. "I'm Amara").
 4. Update `<title>` tags too — each page has its own, near the top.
@@ -211,7 +211,7 @@ Astro) or a simple templating setup — but not necessary yet.
 - Click through the gallery lightbox, open the FAQ accordion, let the
   testimonial carousel auto-advance once.
 - Replace every placeholder phone number, email, and address before this
-  goes live — search for `(202) 202-4033`, `hello@emilylucky.com`, and
+  goes live — search for `(202) 202-4033`, `hello@emilyLorky.com`, and
   `#LMT-000000` across all files.
 
 ---
@@ -353,7 +353,7 @@ months, not something that ships in a single build.
 1. Claim/create a Google Business Profile with the exact same name, phone,
    and hours as the site.
 2. Update `sitemap.xml` and every `canonical`/`og:url` tag with the real
-   domain once she buys one (currently placeholder `emilylucky.com`).
+   domain once she buys one (currently placeholder `emilyLorky.com`).
 3. Ask happy clients to leave a Google review after their session.
 4. Submit the sitemap in Google Search Console once the site is live.
 

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Emily Lucky — Shared JS
+   Emily Lorky — Shared JS
    Every interaction on the site lives here. Organized by feature so it's
    easy to find and edit one piece without touching the others.
    ========================================================================== */
